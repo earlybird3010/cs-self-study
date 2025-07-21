@@ -1,0 +1,51 @@
+What Web Developers Do
+Build and maintain websites by turning client needs (tech firms, startups, or organizations) into functional applications.
+
+Roles include front-end (HTML, CSS, JS for UI), back-end (server-side logic & databases), or full-stack (both) 
+
+
+Web dev is a logical, creative, and in-demand profession with solid pay and lifestyle balance 
+
+💼 Front-End, Back-End & Full-Stack
+Front-end: Deals with UI—design, layouts, interaction via HTML/CSS/JavaScript.
+
+Back-end: Handles server logic, databases, scalability with languages like Python, Ruby, JS.
+
+Full-stack: Combines both, which TOP aims to teach 
+
+
+🎯 Career Paths
+Big Tech: High standards, premium pay.
+
+Startups: Fast-paced, equity potential, but volatile.
+
+Freelancing: Freedom and higher hourly rates—but also less stability.
+
+Consultancy: Coding-focused with decent work-life balance.
+
+Established Corporates: Stable, benefits-heavy, but slower-paced 
+
+🛠️ Essential Tools & Mindset
+Core tools include: computer, text editor, CLI, Google, Stack Overflow, Git/GitHub 
+
+TOP emphasizes persistence, problem-solving, and self-directed learning—teaching you how to learn, not just what to code 
+
+
+🤔 Why Choose TOP?
+It’s more realistic than isolated tutorials—sets you up with your own dev environment and exposes you to actual workflows 
+
+Community-driven and continuously evolving—invites you to contribute to the curriculum as you learn 
+
+
+✅ Takeaways
+Web dev covers client needs into live, dynamic websites.
+
+You’ll gain proficiency in front-end, back-end, or full-stack.
+
+The path you choose influences your work environment and lifestyle.
+
+TOP equips you with tools, a supportive community, and a learning mindset.
+
+It's not easy—but it’s fun, challenging, and potentially life-changing 
+
+
