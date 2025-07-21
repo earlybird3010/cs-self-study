@@ -1,0 +1,79 @@
+🌐 Course Overview & Goals
+Open‑source community-driven: The curriculum aggregates high-quality external resources to guide learners from absolute beginner to full-stack readiness 
+Reddit
++9
+The Odin Project
++9
+The Odin Project
++9
+.
+
+Foundational web knowledge: Helps you understand what web developers do—even if you're not pursuing web dev professionally—and builds essential baseline understanding 
+The Odin Project
+.
+
+🧱 Learning Path Breakdown
+Core Topics:
+
+Covers web & computer fundamentals, development environment setup (Git, GitHub), front-end basics (HTML, CSS, JS), and introduces back-end concepts 
+The Odin Project
++1
+Medium
++1
+.
+
+Lesson Format:
+
+Each lesson begins with an introduction, provides context, links to resources, and often ends with memory-check questions. Some include exercises.
+
+Project-Based Reinforcement:
+
+Rather than traditional tests, projects serve as checkpoints where learners apply what they’ve absorbed, reflecting that "snowball" learning metaphor—the deeper you go, the more knowledge you retain 
+The Odin Project
++2
+The Odin Project
++2
+DEV Community
++2
+.
+
+🛠️ Skills & Mindset Focus
+Tools not just taught—but contextualized: The aim is to help you understand why and how tools work, not just follow tutorials—for lifelong self-directed learning 
+The Odin Project
+.
+
+Problem-solving mindset: Emphasizes using resources, asking the right questions, and persisting through confusion—a critical skill in programming 
+The Odin Project
+.
+
+🗣️ English Language Emphasis
+Because programming, documentation, and most community interaction are English-based, non-native speakers are encouraged to build English fluency alongside coding 
+The Odin Project
+.
+
+📚 What Comes After Foundations
+On completion, learners choose between:
+
+Full Stack JavaScript path, or
+
+Full Stack Rails path.
+These deeper tracks build directly on the foundations and feature more advanced, focused learning 
+Reddit
++3
+The Odin Project
++3
+Medium
++3
+The Odin Project
++1
+scottwright.dev
++1
+.
+
+You’re strongly encouraged to follow lessons in order—skipping creates knowledge gaps that hinder problem-solving ability and understanding 
+The Odin Project
+.
+
+Additional resources are optional supplements if you want a deeper dive, but everything in the core curriculum is essential 
+The Odin Project
+.
