@@ -1,0 +1,66 @@
+
+# Summary: Computer Basics 
+
+This lesson introduces fundamental computer concepts, hardware and software components, operating systems, applications, and safe practices.
+
+## 1. What is a Computer?
+A computer is an electronic device that processes, stores, and retrieves data. Examples include:
+- Desktops, laptops
+- Smartphones and tablets
+- Wearables like smartwatches
+
+Computers consist of:
+- **Hardware**: Physical parts like CPU, keyboard, mouse, screen, fan, etc.
+- **Software**: Programs or instructions that tell hardware what to do.
+
+## 2. Operating Systems (OS)
+An OS is the most important software on a computer. It:
+- Manages memory, hardware, files, and software
+- Provides an interface between users and hardware
+
+Examples:
+- **Windows** (common in personal computers)
+- **macOS** (Apple computers)
+- **Linux** (various distributions)
+- **iOS / Android** (mobile devices)
+
+## 3. Applications
+Applications (apps) are programs designed to help users perform specific tasks:
+- Media players (e.g., Spotify)
+- Office software (e.g., Word, Excel)
+- Web browsers, games, code editors, etc.
+
+Apps depend on the OS and run on top of it.
+
+## 4. Open Source vs Closed Source Software
+- **Open-source** software:
+  - Source code is publicly available.
+  - Users can view, modify, and share it.
+  - Examples: Linux, LibreOffice
+  - Pros: Freedom, transparency, often free
+  - Cons: May be unstable or less user-friendly in obscure projects
+
+- **Closed-source** software:
+  - Source code is hidden and proprietary.
+  - Maintained solely by the organization.
+  - Examples: Microsoft Word, macOS
+  - Pros: Polished and stable
+  - Cons: Less control, more expensive, slower bug fixes (unless supported)
+
+## 5. Taking Screenshots
+Screenshots are images captured of your screen. Use cases include:
+- Saving important visual info (e.g., receipts)
+- Reporting bugs or error messages
+- Sharing content quickly
+- Creating tutorials
+
+## 6. Password Tips
+A strong password should:
+- Be long and unpredictable
+- Use a mix of uppercase, lowercase, numbers, and special characters
+- Avoid using personal info or common words
+
+Example:
+- Weak: `OdinProject`
+- Strong: `aufh8r_BLy7jU`
+
