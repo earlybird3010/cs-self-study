@@ -15,7 +15,7 @@ I want to create a substantial Scratch project to improve my critical thingking 
 
 # Phase 2: Add enemies
 - [x] **Blast-Ended Skrewt:** a giant scorpion who moves around and attacks people
-- [ ] **Boggart:** a creature who transforms into your worst fear
+- [x] **Boggart:** a creature who transforms into your worst fear
 - [ ] **Golden Mist:** a mist which disorients the player
 - [ ] **Sphinx:** a creature that poses difficult questions to whom it encounters
 - [ ] **Acromantula:** a giant spider
@@ -36,6 +36,15 @@ I thought it was simple to build this enemy, but it was challenging. Here are th
 ### 3. Infinite looping
     - To avoid the dungeon backdrop from looping indefinitey, I chose an escape place that was as close as possible so that Harry couldn't touch the skrewt.
     - In the first place, I chose a place where Harry touched the wall. By design, the program moved him to his previous recorded position, which was his position when he entered the dungeon. As a result, I chose another position where he didn't touch anything.
+
+## Design Notes - Boggart
+It was simple to implement the Boggart, as its behavior closely mirrors the skrewt. I modified its movement pattern as well as its interaction when battling against Harry Potter. Nonethelss, I decided to challenge myself further by implementing background music tied to scene transitions, and that led to one important design decision.
+
+### **Maze -> A Different Backdrop -> Another Backdrop Transitions**
+    - When transitioning between backdrops, I wanted to stop the old soundtrack and start a new one smoothly. Also, I wanted each soundtrack to loop indefinitely in its associated scene, except for some special cases (Boggart's sound when it encounters Harry).
+    - First idea: used `broadcast` and `stop all sounds` to stop the current music before starting a new one. This only worked for non-looping sounds, and it didn't apply to me because I had to loop my short soundtrack to make the background music. If a `forever` block was looping `play sounds() until done`, then a `stop all sounds` block would only stop the current iteration. Unfortunately, the `when I receive()` block cannot be stacked under the forever block and above the play sounds() until done block to stop the forever script from executing.   
+    - Final idea: I needed to keep track of certain events, so I switched to using **global variables** to track music state.  One simple example is the win? variable, whose value is determined by Harry touching the Triwizard cup. When we start the game, it is set to false. Upon touching the cup, the Harry sprite broadcasts a message to all other sprites. Upon receiving this message, the result sprite sets win? to true. In any sprite other than the result sprite responsible for music, we set win? = true to be a condition for the music to stop.
+    - One tiny detail: `play sounds() until done` block plays the full soundtrack unless stopped. To prevent overlaps, I added a `stop all sounds` block **right before** each new scene plays its theme.
 
 # 🚀 Live Demo
 
