@@ -30,7 +30,7 @@ I thought it was simple to build this enemy, but it was challenging. Here are th
     - Inspired by Ivy's Hardest Game, I used 2 additional variables to store the skrewt's position before entering the dungeon. They are used to restore the skrewt to its original position when it escaped the dungeon.
 
 ### 2. Rescaling and repositioning sprites
-    - I rescale and reposition the skrewt as discussed above.
+    - I rescaled and repositioned the skrewt as discussed above.
     - After Harry escaped the dungeon, I used a hand-calculated position to render him on screen.
 
 ### 3. Infinite looping
@@ -38,7 +38,7 @@ I thought it was simple to build this enemy, but it was challenging. Here are th
     - In the first place, I chose a place where Harry touched the wall. By design, the program moved him to his previous recorded position, which was his position when he entered the dungeon. As a result, I chose another position where he didn't touch anything.
 
 ## Design Notes - Boggart
-It was simple to implement the Boggart, as its behavior closely mirrors the skrewt. I modified its movement pattern as well as its interaction when battling against Harry Potter. Nonethelss, I decided to challenge myself further by implementing background music tied to scene transitions, and that led to one important design decision.
+It was simple to implement the Boggart, as its behavior closely mirrors the skrewt. I modified its movement pattern as well as its interaction when battling against Harry Potter. Nonetheless, I decided to challenge myself further by implementing background music tied to scene transitions, and that led to one important design decision.
 
 ### **Maze -> A Different Backdrop -> Another Backdrop Transitions**
     - When transitioning between backdrops, I wanted to stop the old soundtrack and start a new one smoothly. Also, I wanted each soundtrack to loop indefinitely in its associated scene, except for some special cases (Boggart's sound when it encounters Harry).
