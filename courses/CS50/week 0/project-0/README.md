@@ -46,6 +46,17 @@ It was simple to implement the Boggart, as its behavior closely mirrors the skre
     - Final idea: I needed to keep track of certain events, so I switched to using **global variables** to track music state.  One simple example is the win? variable, whose value is determined by Harry touching the Triwizard cup. When we start the game, it is set to false. Upon touching the cup, the Harry sprite broadcasts a message to all other sprites. Upon receiving this message, the result sprite sets win? to true. In any sprite other than the result sprite responsible for music, we set win? = true to be a condition for the music to stop.
     - One tiny detail: `play sounds() until done` block plays the full soundtrack unless stopped. To prevent overlaps, I added a `stop all sounds` block **right before** each new scene plays its theme.
 
+## Design Notes - Golden Mist
+    - Description: The Golden Mist, or Limbo Mist, is a yellow cloud that continually expands and contracts around a central point. When Harry touches it, he is transported to a place where his senses are reversed (up becomes down, left becomes right). He needs to catch a flying key to escape before being cauht by the guarding Griffin.
+    - The rendering of the mist was the new difficulty I needed to resolve. On the other hand, creating the new game was not difficult, but I was tired for keeping track of all the variables for the smooth transitions between backdrops and soundtracks.
+
+### **Mist Rendering**
+    - Initially, I thought this task was similar to those of two previous enemies. We chose a place and defined its movement. Nonetheless, a method to hide the mist at appropriate moments, encountering a new enemy, for example, was necessary. Since the cloud contracted and expanded continuously, I needed to use a `forever` loop to render different sizes of the sprite on screen. As a result, this sprite coudln't use `when I receive()` block to receive brodcast message from other sprites to hide his image until necessary, because there were an infinite number of `show` in the `forever` loop. This problem was similar to soundtrack transition in the previous problem, so I utilized several global variables to determine the actions to take at different states of the `forever` loop.
+
+### **Mini game development**
+    - The logic for this game was simple, but I needed to keep track of many global variables to render sprites and backdrops at different states of the program. Also, to fulfill the last request of project 0, I made a function which determines the velocity of the Griffin for the game based on the player's answer.
+ 
+
 # 🚀 Live Demo
 
 🔗 [Play the game on Scratch](https://scratch.mit.edu/projects/1203579370/)
