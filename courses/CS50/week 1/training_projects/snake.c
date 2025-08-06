@@ -157,9 +157,9 @@ void set_snake(void)
     srand(time(NULL)); // Seed the random number generator
 
     int min_x = 1;
-    int max_x = BOUNDARY_WIDTH - 1;
+    int max_x = BOUNDARY_WIDTH - 2;
     int min_y = 1;
-    int max_y = BOUNDARY_LENGTH - 1;
+    int max_y = BOUNDARY_LENGTH - 2;
 
     // Generate a random integer point within the specified range
     int random_x = (rand() % (max_x - min_x + 1)) + min_x;
@@ -215,7 +215,8 @@ int is_snake_collide(void)
 
     for (int i = 1; i < snake_length; i++)
     {
-        int body_x, body_y = snake_coordinates[i][0], snake_coordinates[i][1];
+        int body_x = snake_coordinates[i][0];
+        int body_y = snake_coordinates[i][1];
         if (body_x == head_x && body_y == head_y)
         {
             return 1;
