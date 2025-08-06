@@ -1,0 +1,88 @@
+The Snake game is a classic arcade game where the player controls a snake using W, A, S, and D keys. 
+The snake moves around the screen eating fruits to grow longer. The game ends when the snake collides with a wall or itself.
+
+
+- Description and logic:
+
+1. Snake
+Represented by a sequence of (x, y) coordinates stored as an array of 2-element arrays.
+Since we know the maximum size of a snake, we can create an array to store its coordinates.
+
+Movement:
+
+The snake's head moves in the direction specified by the latest input (W, A, S, D).
+
+If no input is given, the snake continues in the current direction.
+
+Idea: The hard part is to determine the snake's coordinates when it moves to a new position. The trick
+is to calculate the coordinate of the head, and update the coordinates of each remaining segment to that of
+the segment in front of it.
+
+Eating:
+
+When the snake's head reaches the fruit's position, it grows by one segment.
+
+Collision Detection:
+
+The game ends if the head touches the wall or any part of the body.
+
+2. Fruit
+Represented by a single (x, y) coordinate.
+
+The fruit only appears if:
+
+There is no fruit on the screen, or
+
+The current fruit has been eaten.
+
+A fruit disappears once it is eaten (i.e., when the snake's head moves onto it).
+
+3. Walls
+Represented as a 2D array of coordinates marking the game boundaries.
+
+4. Gameplay Loop
+The game progresses in frames.
+
+Each frame executes in this order:
+
+Check for collision — end the game if necessary.
+
+Render all available sprites.
+
+Take input — determine next direction.
+
+- Development Phases
+Phase 1: Initial Prompt
+Start the program with a greeting message.
+
+Reminder: in C, arrays passed to functions decay into pointers (only the address of the first element is passed).
+
+Initializing an array gives you a pointer to the first element plus fixed size.
+
+🟨 Phase 2: Core Logic
+Maze Implementation:
+
+Use a 2D matrix (int maze[rows][cols]) to represent the game map.
+
+maze[x][y] == 0: empty; 1: occupied by snake, fruit, or wall.
+
+Snake Implementation:
+
+A basic version can work by prompting the user for input each time.
+
+Additional C lessons:
+- scanf("%c", &char_name) doesn't skip the leading white space characters, and it stops reading from the stdin stream
+upon encountering \n. Note that it doesn't include \n in the target variable.
+- fgets(buffer_name, buffer_size, stream_name) reads from stream_name stream up to:
+i) buffer_size - 1 characters, then it combines those characters together with \o as the value stored in buffer_name variable.
+2) encountering \n, then it combines the processed characters, together with \n\o, as the value stored in buffer_name variable.
+
+👀 Game Design Observation
+To design any simple game, think in terms of:
+
+Sprite Representation: What does the game entity look like (e.g., snake, fruit)?
+
+Sprite Actions: How can it behave or move (e.g., snake slithers, fruit sits idle)?
+
+State Changes: What happens as a result of actions (e.g., snake grows when it eats a fruit)?
+
