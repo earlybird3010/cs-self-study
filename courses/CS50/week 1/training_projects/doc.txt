@@ -60,13 +60,13 @@ Reminder: in C, arrays passed to functions decay into pointers (only the address
 Initializing an array gives you a pointer to the first element plus fixed size.
 
 🟨 Phase 2: Core Logic
-Maze Implementation:
+- Maze Implementation:
 
 Use a 2D matrix (int maze[rows][cols]) to represent the game map.
 
 maze[x][y] == 0: empty; 1: occupied by snake, fruit, or wall.
 
-Snake Implementation:
+- Snake Implementation:
 
 A basic version can work by prompting the user for input each time.
 
@@ -76,6 +76,12 @@ upon encountering \n. Note that it doesn't include \n in the target variable.
 - fgets(buffer_name, buffer_size, stream_name) reads from stream_name stream up to:
 i) buffer_size - 1 characters, then it combines those characters together with \o as the value stored in buffer_name variable.
 2) encountering \n, then it combines the processed characters, together with \n\o, as the value stored in buffer_name variable.
+
+- Fruit Implementation:
+Make sure food doesn't lie on top of snake when generated.
+Use an additional variable to store the previous snake's tail's position.
+
+
 
 👀 Game Design Observation
 To design any simple game, think in terms of:
