@@ -184,7 +184,7 @@ void start_game(void)
             mvaddch(next_row, next_column, SNAKE_SYMBOL);
             mvaddch(snake_coordinates[snake_length - 1][0], snake_coordinates[snake_length - 1][1], EMPTY_SYMBOL);
             refresh();
-            sleep(WAITING_TIME);
+            napms(150);
             break;
         }
 
@@ -192,8 +192,14 @@ void start_game(void)
         snake_eat();
     }
 
-    mvaddch(BOUNDARY_WIDTH - 1, BOUNDARY_LENGTH, '\n');
-    printw("\nTOO BAD! Maybe next time!\n");
+    int win_rows, win_columns;
+    getmaxyx(stdscr, win_rows, win_columns);
+
+    int msg_row = (BOUNDARY_WIDTH < win_rows) ? BOUNDARY_WIDTH : win_rows - 1;
+
+    move(msg_row, 0);
+    clrtoeol();
+    mvprintw(msg_row, 0, "TOO BAD! Maybe next time!\n");
     refresh();
     sleep(WAITING_TIME);
 }
