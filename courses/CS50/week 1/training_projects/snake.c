@@ -1,7 +1,9 @@
+#include <ncurses.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 // Maze
 #define BOUNDARY_LENGTH 30
@@ -40,6 +42,7 @@ void start_game(void);
 // Maze display
 void set_ground(void);
 void display_ground(void);
+void curses_display_ground(void);
 
 int main(void)
 {
@@ -115,6 +118,11 @@ void print_alternate(int nums[], size_t nums_length, char start)
 // Start game
 void start_game(void)
 {
+    // initialize the curses library
+    initscr();
+    keypad(stdscr, TRUE);
+    cbreak();
+
     set_ground();
     set_snake();
     char direction = ' ';
@@ -126,17 +134,37 @@ void start_game(void)
             set_fruit();
         }
 
-        system("clear");
-        display_ground();
-        printf("Enter a direction:");
-        scanf(" %c", &direction);
+        // system("clear");
+        curses_display_ground();
+        refresh();
+
+        int direction_ascii = getch();
+
+        switch(direction_ascii)
+        {
+            case 97:
+                direction = 'a';
+                break;
+            case 100:
+                direction = 'd';
+                break;
+            case 115:
+                direction = 's';
+                break;
+            case 119:
+                direction = 'w';
+                break;
+        }
 
         snake_move(direction);
         snake_eat();
     }
 
-    display_ground();
-    printf("TOO BAD! Maybe next time!\n");
+    curses_display_ground();
+    printw("TOO BAD! Maybe next time!\n");
+    refresh();
+    sleep(3);
+    endwin();
 }
 
 // Set the playing ground before the game
@@ -158,7 +186,7 @@ void set_ground(void)
     }
 }
 
-// Display the playing ground at any pont in the game
+// Display the playing ground at any point in the game
 void display_ground(void)
 {
     for (int i = 0; i < BOUNDARY_WIDTH; i++)
@@ -183,6 +211,34 @@ void display_ground(void)
             }
         }
         printf("\n");
+    }
+}
+
+// Update the image of the playing ground for curses's subroutines
+void curses_display_ground(void)
+{
+    for (int i = 0; i < BOUNDARY_WIDTH; i++)
+    {
+        for (int j = 0; j < BOUNDARY_LENGTH; j++)
+        {
+            int current_point = ground[i][j];
+            switch(current_point)
+            {
+                case EMPTY:
+                    mvaddch(i, j, EMPTY_SYMBOL);
+                    break;
+                case WALL:
+                    mvaddch(i, j, WALL_SYMBOL);
+                    break;
+                case SNAKE:
+                    mvaddch(i, j, SNAKE_SYMBOL);
+                    break;
+                case FRUIT:
+                    mvaddch(i, j, FRUIT_SYMBOL);
+                    break;
+            }
+        }
+        mvaddch(i, BOUNDARY_LENGTH, '\n');
     }
 }
 

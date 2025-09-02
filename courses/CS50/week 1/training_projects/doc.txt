@@ -1,87 +1,82 @@
 The Snake game is a classic arcade game where the player controls a snake using W, A, S, and D keys. 
 The snake moves around the screen eating fruits to grow longer. The game ends when the snake collides with a wall or itself.
 
+Part 1: Game Design
+Snake:
 
-- Description and logic:
+- Represented by array of (x,y) coords.
 
-1. Snake
-Represented by a sequence of (x, y) coordinates stored as an array of 2-element arrays.
-Since we know the maximum size of a snake, we can create an array to store its coordinates.
+- Movement: head moves in latest direction; body follows.
 
-Movement:
+- Eating: grows one segment if head overlaps fruit.
 
-The snake's head moves in the direction specified by the latest input (W, A, S, D).
+- Collision: game ends if head hits wall or body.
 
-If no input is given, the snake continues in the current direction.
+Fruit
 
-Idea: The hard part is to determine the snake's coordinates when it moves to a new position. The trick
-is to calculate the coordinate of the head, and update the coordinates of each remaining segment to that of
-the segment in front of it.
+- Single (x,y) coord.
 
-Eating:
+- Appears if none on screen or previous eaten.
 
-When the snake's head reaches the fruit's position, it grows by one segment.
+- Must not overlap snake.
 
-Collision Detection:
+Maze
 
-The game ends if the head touches the wall or any part of the body.
+- Use 2D array maze[rows][cols]
 
-2. Fruit
-Represented by a single (x, y) coordinate.
+- 0 = empty, 1 = wall, 2 = snake, 3 = fruit.
 
-The fruit only appears if:
+Gameplay Loop (per frame)
 
-There is no fruit on the screen, or
+- Check collisions.
 
-The current fruit has been eaten.
+- Render all sprites.
 
-A fruit disappears once it is eaten (i.e., when the snake's head moves onto it).
+- Take input → set direction.
 
-3. Walls
-Represented as a 2D array of coordinates marking the game boundaries.
+Development Phases
 
-4. Gameplay Loop
-The game progresses in frames.
+- Phase 1: Greeting message.
 
-Each frame executes in this order:
+- Phase 2: Core logic (maze, snake, fruit).
 
-Check for collision — end the game if necessary.
+- Phase 3: Smooth gameplay with ncurses.
 
-Render all available sprites.
+Part 2: C Lessons
+Phase 1 (Prompt)
 
-Take input — determine next direction.
+- Arrays decay into pointers when passed to functions.
 
-- Development Phases
-Phase 1: Initial Prompt
-Start the program with a greeting message.
+- Initializing an array = pointer to first element + fixed size.
 
-Reminder: in C, arrays passed to functions decay into pointers (only the address of the first element is passed).
+- Takeaway: Functions don’t “know” array size, only pointer.
 
-Initializing an array gives you a pointer to the first element plus fixed size.
+Phase 2 (Core Logic)
 
-🟨 Phase 2: Core Logic
-- Maze Implementation:
+- scanf("%c", &c) → doesn’t skip whitespace, stops on \n, doesn’t include it.
 
-Use a 2D matrix (int maze[rows][cols]) to represent the game map.
+- fgets(buf, size, stream) → reads up to size-1, includes \n if present, always null terminates.
 
-maze[x][y] == 0: empty; 1: occupied by snake, fruit, or wall.
+- Takeaway: prefer fgets for predictable input.
 
-- Snake Implementation:
+Phase 3 (Smooth gameplay)
 
-A basic version can work by prompting the user for input each time.
+- ncurses = terminal-independent screen + input handling.
 
-Additional C lessons:
-- scanf("%c", &char_name) doesn't skip the leading white space characters, and it stops reading from the stdin stream
-upon encountering \n. Note that it doesn't include \n in the target variable.
-- fgets(buffer_name, buffer_size, stream_name) reads from stream_name stream up to:
-i) buffer_size - 1 characters, then it combines those characters together with \o as the value stored in buffer_name variable.
-2) encountering \n, then it combines the processed characters, together with \n\o, as the value stored in buffer_name variable.
+- WINDOW holds internal image.
 
-- Fruit Implementation:
-Make sure food doesn't lie on top of snake when generated.
-Use an additional variable to store the previous snake's tail's position.
+- curscr: current screen.
 
+- stdscr: your working screen.
 
+- Call refresh() to display changes.
+
+- Takeaway: keep game logic separate from UI → easier to maintain.
+
+Extra Notes
+
+Update VSCode on Fedora: sudo dnf upgrade code.
+Read https://invisible-island.net/ncurses/ncurses-intro.html#using to learn about ncurses.
 
 👀 Game Design Observation
 To design any simple game, think in terms of:
@@ -91,4 +86,3 @@ Sprite Representation: What does the game entity look like (e.g., snake, fruit)?
 Sprite Actions: How can it behave or move (e.g., snake slithers, fruit sits idle)?
 
 State Changes: What happens as a result of actions (e.g., snake grows when it eats a fruit)?
-
