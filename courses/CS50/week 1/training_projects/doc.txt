@@ -40,7 +40,7 @@ Development Phases
 
 - Phase 2: Core logic (maze, snake, fruit).
 
-- Phase 3: Smooth gameplay with ncurses.
+- Phase 3: Smooth gameplay with ncurses
 
 Part 2: C Lessons
 Phase 1 (Prompt)
@@ -72,6 +72,10 @@ Phase 3 (Smooth gameplay)
 - Call refresh() to display changes.
 
 - Takeaway: keep game logic separate from UI → easier to maintain.
+
+- mvaddchr(y, x, symbol) adds the character symbol to row y, column x.
+
+- timeout(delay) controls the max time (delay) for input functions, like getch, to receive an input before returning ERR ---> useful for continuous movement in Snake.
 
 Extra Notes
 

@@ -18,6 +18,7 @@
 #define SNAKE_SYMBOL '*'
 #define FRUIT 3
 #define FRUIT_SYMBOL '@'
+#define TIMEOUT 200
 char welcome_grid[WELCOME_WIDTH][WELCOME_LENGTH];
 int ground[BOUNDARY_WIDTH][BOUNDARY_LENGTH];
 
@@ -26,8 +27,9 @@ int snake_coordinates[(BOUNDARY_LENGTH - 2) * (BOUNDARY_WIDTH - 2)][2];
 int prev_tail_coordinate[2];
 int snake_length = 0;
 void set_snake(void);
-void snake_move(char direction);
-int is_snake_collide(void);
+void next_cell(int, int, int, int *, int *);
+void snake_move(int);
+int is_snake_collide_next(int);
 void snake_eat(void);
 
 // Fruit
@@ -39,7 +41,7 @@ int is_fruit_on_top_snake(void);
 // Screen display
 void curses_print_welcome(void);
 void set_welcome_grid(void);
-void fill_grid_row(int row_idx, int nums[], size_t nums_length, char start);
+void fill_grid_row(int, int[], size_t, char);
 
 void start_game(void);
 
@@ -53,20 +55,23 @@ int main(void)
     initscr();
     keypad(stdscr, TRUE);
     cbreak();
+    noecho();
 
     // Display welcome screen
     set_welcome_grid();
     curses_print_welcome();
     refresh();
 
-    char option;
-    printw("Do you want to start a new game? (y/n)\n");
+    int option;
+    printw("\nDo you want to start a new game? (y/n)\n");
     refresh();
     option = getch();
 
     if (option == 'y') 
     {
         srand(time(NULL)); // Seed the random number generator
+        erase();
+        timeout(TIMEOUT);
         start_game();
     }
     else
@@ -89,7 +94,6 @@ void curses_print_welcome(void)
             char current_point = welcome_grid[i][j];
             mvaddch(i, j, current_point);
         }
-        mvaddch(i, WELCOME_LENGTH, '\n');
     }
 }
 
@@ -150,27 +154,46 @@ void start_game(void)
 {
     set_ground();
     set_snake();
-    char direction = ' ';
+    int direction = ' ';
 
-    while (!is_snake_collide())
+    while (1)
     {
         if (!is_fruit_available)
         {
             set_fruit();
         }
 
-        // system("clear");
         curses_display_ground();
         refresh();
 
+        int prev_direction = direction;
         direction = getch();
+
+        // Continuous movement
+        if (direction != 'w' && direction != 'a' && direction != 's' && direction != 'd')
+        {
+            direction = prev_direction;
+        }
+
+        // Collision detection
+        if (is_snake_collide_next(direction))
+        {
+            curses_display_ground();
+            int next_row, next_column;
+            next_cell(direction, snake_coordinates[0][0], snake_coordinates[0][1], &next_row, &next_column);
+            mvaddch(next_row, next_column, SNAKE_SYMBOL);
+            mvaddch(snake_coordinates[snake_length - 1][0], snake_coordinates[snake_length - 1][1], EMPTY_SYMBOL);
+            refresh();
+            sleep(WAITING_TIME);
+            break;
+        }
 
         snake_move(direction);
         snake_eat();
     }
 
-    curses_display_ground();
-    printw("TOO BAD! Maybe next time!\n");
+    mvaddch(BOUNDARY_WIDTH - 1, BOUNDARY_LENGTH, '\n');
+    printw("\nTOO BAD! Maybe next time!\n");
     refresh();
     sleep(WAITING_TIME);
 }
@@ -218,7 +241,6 @@ void curses_display_ground(void)
                     break;
             }
         }
-        mvaddch(i, BOUNDARY_LENGTH, '\n');
     }
 }
 
@@ -241,8 +263,29 @@ void set_snake(void)
     ground[random_x][random_y] = SNAKE; 
 }
 
+// Store next cell positions to 2 variables
+void next_cell(int direction, int row, int column, int *next_row, int *next_column)
+{
+    *next_row = row;
+    *next_column = column;
+    switch(direction)
+    {
+        case 'w':
+            *next_row = row - 1;
+            break;
+        case 'a':
+            *next_column = column - 1;
+            break;
+        case 's':
+            *next_row = row + 1;
+            break;
+        case 'd':
+            *next_column = column + 1;
+    }
+}
+
 // Snake moves
-void snake_move(char direction)
+void snake_move(int direction)
 {   
     int tail_x = snake_coordinates[snake_length - 1][0];
     int tail_y = snake_coordinates[snake_length - 1][1];
@@ -279,26 +322,22 @@ void snake_move(char direction)
     ground[head_x][head_y] = SNAKE;
 }
 
-int is_snake_collide(void)
+int is_snake_collide_next(int direction)
 {
-    int head_x = snake_coordinates[0][0];
-    int head_y = snake_coordinates[0][1];
+    int head_row = snake_coordinates[0][0];
+    int head_column = snake_coordinates[0][1];
 
-    for (int i = 1; i < snake_length; i++)
-    {
-        int body_x = snake_coordinates[i][0];
-        int body_y = snake_coordinates[i][1];
-        if (body_x == head_x && body_y == head_y)
-        {
-            return 1;
-        }
-    }
+    int next_row, next_column;
+    next_cell(direction, head_row, head_column, &next_row, &next_column);
 
-    if (head_x == 0 || head_x == BOUNDARY_WIDTH - 1 || head_y == 0 || head_y == BOUNDARY_LENGTH - 1)
-    {
-        return 1;
-    }
-    return 0;
+
+    int is_wall_collide = (next_row == 0 || next_row == BOUNDARY_WIDTH - 1 ||
+                           next_column == 0 || next_column == BOUNDARY_LENGTH - 1);
+
+    int is_self_collide = (ground[next_row][next_column] == SNAKE && 
+        (direction == 'w' || direction == 's' || direction == 'a' || direction == 'd'));
+    
+    return is_wall_collide || is_self_collide;
 }
 
 // Set fruit in maze if there is no fruit
