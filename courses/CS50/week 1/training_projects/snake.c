@@ -163,23 +163,7 @@ void start_game(void)
         curses_display_ground();
         refresh();
 
-        int direction_ascii = getch();
-
-        switch(direction_ascii)
-        {
-            case 97:
-                direction = 'a';
-                break;
-            case 100:
-                direction = 'd';
-                break;
-            case 115:
-                direction = 's';
-                break;
-            case 119:
-                direction = 'w';
-                break;
-        }
+        direction = getch();
 
         snake_move(direction);
         snake_eat();
