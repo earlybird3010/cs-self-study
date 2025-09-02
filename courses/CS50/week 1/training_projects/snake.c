@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 // Game macros
-#define WAITING_TIME 3
+#define WAITING_TIME 2
 #define WELCOME_LENGTH 58
 #define WELCOME_WIDTH 7
 #define BOUNDARY_LENGTH 30
@@ -18,7 +18,7 @@
 #define SNAKE_SYMBOL '*'
 #define FRUIT 3
 #define FRUIT_SYMBOL '@'
-#define TIMEOUT 200
+#define TIMEOUT 600
 char welcome_grid[WELCOME_WIDTH][WELCOME_LENGTH];
 int ground[BOUNDARY_WIDTH][BOUNDARY_LENGTH];
 
@@ -324,21 +324,38 @@ void snake_move(int direction)
 
 int is_snake_collide_next(int direction)
 {
+    // check for valid moves
+    if (direction!='w' && direction!='a' && direction!='s' && direction!='d')
+        return 0;
+
     int head_row = snake_coordinates[0][0];
-    int head_column = snake_coordinates[0][1];
+    int head_col = snake_coordinates[0][1];
 
-    int next_row, next_column;
-    next_cell(direction, head_row, head_column, &next_row, &next_column);
+    int next_row, next_col;
+    next_cell(direction, head_row, head_col, &next_row, &next_col);
 
+    // out of bounds check
+    if (next_row < 0 || next_row >= BOUNDARY_WIDTH || next_col < 0 || next_col >= BOUNDARY_LENGTH)
+    {
+        return 1;
+    }
 
-    int is_wall_collide = (next_row == 0 || next_row == BOUNDARY_WIDTH - 1 ||
-                           next_column == 0 || next_column == BOUNDARY_LENGTH - 1);
+    // wall collision
+    int is_wall_collision = (next_row == 0 || next_row == BOUNDARY_WIDTH - 1 || next_col == 0 || next_col == BOUNDARY_LENGTH - 1);
 
-    int is_self_collide = (ground[next_row][next_column] == SNAKE && 
-        (direction == 'w' || direction == 's' || direction == 'a' || direction == 'd'));
-    
-    return is_wall_collide || is_self_collide;
+    // Fruit at the next cell?
+    int is_fruit_next = is_fruit_available && next_row == fruit_coordinate[0] && next_col == fruit_coordinate[1];
+
+    // classic rule: moving into *current* tail is OK if fruit not at next cell
+    int tail_row = snake_coordinates[snake_length - 1][0];
+    int tail_col = snake_coordinates[snake_length - 1][1];
+    int is_tail_pass_through = (!is_fruit_next && next_row == tail_row && next_col == tail_col);
+
+    int is_self_collision = (ground[next_row][next_col] == SNAKE) && !is_tail_pass_through;
+
+    return is_wall_collision || is_self_collision;
 }
+
 
 // Set fruit in maze if there is no fruit
 void set_fruit(void)
