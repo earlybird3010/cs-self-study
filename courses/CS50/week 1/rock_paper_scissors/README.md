@@ -1,11 +1,10 @@
-# 🚀 Project Title
+# 🚀 Rock, Paper, Scissors (C)
 
 > A C program that simulates the game rock, paper, scissors.
 
 ---
 
 ## 📚 Table of Contents
-
 - [Overview](#overview)
 - [Features](#features)
 - [Getting Started](#getting-started)
@@ -18,102 +17,75 @@
 ---
 
 ## 🧠 Overview
-
-This project is designed to simulate two players playing the game rock, paper, scissors. It was built to practice C fundamentals taught during the first week of CS50: variables, functions, loops, control structure , and serves as a foundation for more advanced features in the future.
+This project simulates two players playing rock, paper, scissors. It’s a foundation for more advanced features later.
 
 ---
 
 ## ✨ Features
 
-### Core logic
+### Core Logic
+- [ ] Single play against computer with chosen number of rounds
+- [ ] Multiple levels of difficulty vs. computer
+- [ ] Results history
+- [ ] Customizable player name for record keeping
 
-- ✅ Feature 1: Single play against computer with chosen number of rounds
-- ✅ Feature 2: Multiple level of difficulties when played against computer
-- ✅ Feature 3: A record of results
-- ✅ Feature 4: Customizable player name for record keeping
-
-### Core GUI
-- ✅ Feature 1: Show 2 objects with hand gestures during the play
-- ✅ Feature 2: Display score on screen while playing
-- ✅ Feature 3: Buttons for user's choice
-- ✅ Feature 4: Sound effects for wins, losses, and ties
+### Core “GUI” (console)
+- [ ] Show hand gestures during play (ASCII art)
+- [ ] Display score on screen while playing
+- [ ] Buttons/keys for user’s choice
+- [ ] Sound effects for wins, losses, and ties
 
 ### Above and Beyond
-- ✅ Feature 1: Display a list of outcomes
-- ✅ Feature 2: Improve computer's strategy based on users' previous outcomes
-- ✅ Feature 3: Include some basic statistics like win rate, most common user choice, longest winning streak
-
+- [ ] Display a list of outcomes
+- [ ] Improve computer strategy based on prior outcomes
+- [ ] Basic statistics (win rate, most common choice, longest streak)
 
 ---
 
 ## 🚀 Getting Started
 
 ### ✅ Prerequisites
+- C compiler: GCC or Clang
+- Unix-like OS (Linux/macOS)  
+  **Tested:** Fedora Linux 40+ (GCC)
 
-List what’s needed to install and run this project.
-
-```bash
-# Example (edit based on your tech)
-gcc --version=c11        # for C projects
-```
-
-### 🔧 Installation
-
-```bash
-git clone https://github.com/yourusername/project-name.git
-cd project-name
-# If needed:
-make                # or npm install / pip install -r requirements.txt
-```
+> Note: `cs50.c`/`cs50.h` are included in this folder; no system C S50 install required.
 
 ---
 
 ## 🛠 Usage
 
-Explain how to run or use the project:
-
 ```bash
-# For C
-gcc main.c -o main
+# clone the parent repo once
+git clone https://github.com/earlybird3010/cs-self-study.git
+
+# cd into this subproject (quote path due to space)
+cd 'cs-self-study/courses/CS50/week 1/rock_paper_scissors'
+
+# build and run
+gcc -std=c11 -Wall -Wextra -Werror main.c cs50.c -o main
 ./main
 
-# For Python
-python3 main.py
-
-# For Node
-node index.js
-```
-
----
-
-## 🗂 Project Structure
-
-```
-project-name/
-│
-├── src/             # Source files
-├── include/         # Header files (for C/C++)
-├── assets/          # Images or data
-├── tests/           # Unit tests
+🗂 Project Structure
+rock_paper_scissors/
+├── cs50.c        # vendored CS50 library source
+├── cs50.h        # vendored CS50 header
+├── main.c        # program source
 ├── README.md
-└── LICENSE
-```
+└── doc.txt       # notes / tracker
+# (build artifacts like bin/rps are not committed)
 
----
+⚙️ Built With
 
-## ⚙️ Built With
+Language: C (GCC/Clang)
 
-- [Language] — (C / Python / JS / Java / etc.)
-- [Libraries or Frameworks] — (if any)
+Libraries: cs50.c, cs50.h
 
----
+🤝 Contributing
 
-## 🤝 Contributing
+Pull requests are welcome! Fork the repo and open a PR.
 
-Pull requests are welcome! If you’d like to help improve the project, please fork the repo and submit a PR.
+📄 License
 
----
-
-## 📄 License
-
-[MIT](./LICENSE) © [Your Name]
+MIT
+ © Chau Nguyen

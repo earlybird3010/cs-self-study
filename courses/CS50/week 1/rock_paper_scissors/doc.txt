@@ -1,9 +1,9 @@
-Overview: Rock, Paper, Scissors is a 2-player game in which a player wins if he scores more points than his opponent.
-In each round, each player chooses one of three options: rock, paper, scissors. The rule is rock beats scissors, scissors cut paper, and paper covers rock.
-A player gains one point if and only if his choice defeats his opponent's, and scores no points othewise.
+Overview: Rock, Paper, Scissors is a 2-player game in which a player wins if they score more points than their opponent.
+In each round, each player chooses one of three options: rock, paper, or scissors. The rule is rock beats scissors, scissors cut paper, and paper covers rock.
+A player gains one point if and only if their choice defeats their opponent's, and scores no points otherwise.
 
 Game design for each phase:
-Phase 1: Single player against computer with chosen number of rounds
+Phase 1: Single player against computer with a chosen number of rounds
 
 Player:
 - Sprite representation is not needed at this stage.
@@ -12,12 +12,12 @@ Player:
 
 Computer: 
 - Sprite representation is not needed at this stage.
-- pc_score: pc's score, is_pc_win: is pc winning?, pc_choice: player's choice for r,p,s
+- pc_score: pc's score, is_pc_win: is pc winning?, pc_choice: computer's choice for r,p,s
 - The computer earns 1 point if it defeats the player.
 
 Game:
-- num_rounds represents number of rounds of the game
-- prompts the user for a choice amongst rock, paper, scissors
+- num_rounds represents the number of rounds of the game
+- prompts the user for a choice amongst rock, paper, and scissors
 - determine who wins based on 2 choices
 - update state of the game
 - display points
@@ -25,17 +25,17 @@ Game:
 
 Game logic:
 1. Print welcome screen
-2. Ask for n number of rounds to play from player
+2. Ask for n number of rounds to play from the player
 3. Loop through n number of rounds, and in each round:
     3.1. Ask the user to choose from 1 of 3 options: rock, paper, scissors
     3.2. Get an option from the computer
     3.3. Display the computer's choice
-    3.4. Display result of current round
+    3.4. Display the result of the current round
     3.5. Display points
-    3.6. Stop game and announce winner once the result is determined.
+    3.6. Stop the game and announce the winner once the result is determined.
 
 Additional C lessons
-Phase 1: Single player against computer with chosen number of rounds
+Phase 1: Single player against computer with a chosen number of rounds
 
 Player:
 

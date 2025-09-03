@@ -1,3 +1,5 @@
+// Simulate the classic game rock, paper, scissors
+
 #include "cs50.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,12 +15,12 @@
 
 // Player
 int p_score = 0;
-int is_p_win = false;
+int is_p_win = 0;
 char p_choice;
 
 // Computer
 int pc_score = 0;
-int is_pc_win = false;
+int is_pc_win = 0;
 char pc_choice;
 char pc_choose_random(void);
 
@@ -89,7 +91,8 @@ char get_player_choice(void)
     do
     {
         p_choice = get_char("Pick an option amongst rock(r), paper(p), or scissors(s): ");
-    } while (p_choice != ROCK && p_choice != PAPER && p_choice != SCISSORS);
+    } 
+    while (p_choice != ROCK && p_choice != PAPER && p_choice != SCISSORS);
 
     return p_choice;
 }
@@ -101,7 +104,8 @@ int get_rounds_num(void)
     do
     {
         number_of_rounds = get_int("How many rounds do you want to play? ");
-    } while (number_of_rounds <= 0);
+    } 
+    while (number_of_rounds <= 0);
     
     return number_of_rounds;
 }
@@ -111,38 +115,44 @@ void update_game(void)
 {
     if (p_choice == ROCK && pc_choice == PAPER)
     {
-        is_p_win = false;
-        is_pc_win = true;
+        is_p_win = 0;
+        is_pc_win = 1;
         pc_score += 1;
-    } else if (p_choice == ROCK && pc_choice == SCISSORS)
+    } 
+    else if (p_choice == ROCK && pc_choice == SCISSORS)
     {
-        is_p_win = true;
-        is_pc_win = false;
+        is_p_win = 1;
+        is_pc_win = 0;
         p_score += 1;
-    } else if (p_choice == PAPER && pc_choice == ROCK)
+    } 
+    else if (p_choice == PAPER && pc_choice == ROCK)
     {
-        is_p_win = true;
-        is_pc_win = false;
+        is_p_win = 1;
+        is_pc_win = 0;
         p_score += 1;
-    } else if (p_choice == PAPER && pc_choice == SCISSORS)
+    } 
+    else if (p_choice == PAPER && pc_choice == SCISSORS)
     {
-        is_p_win = false;
-        is_pc_win = true;
+        is_p_win = 0;
+        is_pc_win = 1;
         pc_score += 1;
-    } else if (p_choice == SCISSORS && pc_choice == PAPER)
+    } 
+    else if (p_choice == SCISSORS && pc_choice == PAPER)
     {
-        is_p_win = true;
-        is_pc_win = false;
+        is_p_win = 1;
+        is_pc_win = 0;
         p_score += 1;
-    } else if (p_choice == SCISSORS && pc_choice == ROCK)
+    } 
+    else if (p_choice == SCISSORS && pc_choice == ROCK)
     {
-        is_p_win = false;
-        is_pc_win = true;
+        is_p_win = 0;
+        is_pc_win = 1;
         pc_score += 1;
-    } else
+    } 
+    else
     {
-        is_p_win = false;
-        is_pc_win = false;
+        is_p_win = 0;
+        is_pc_win = 0;
     }
 
 }
@@ -152,10 +162,12 @@ void display_computer_choice(void)
     if (pc_choice == ROCK)
     {
         printf("The computer chooses ROCK!\n");
-    } else if (pc_choice == PAPER)
+    } 
+    else if (pc_choice == PAPER)
     {
         printf("The computer chooses PAPER!\n");
-    } else if (pc_choice == SCISSORS)
+    } 
+    else if (pc_choice == SCISSORS)
     {
         printf("The computer chooses SCISSORS!\n");
     }
@@ -167,7 +179,8 @@ void display_result(void)
     if (is_p_win == is_pc_win)
     {
         printf("DRAW!\n");
-    } else if (is_p_win)
+    } 
+    else if (is_p_win)
     {
         switch(p_choice)
         {
@@ -181,7 +194,8 @@ void display_result(void)
                 printf("SCISSORS cuts PAPER!\n");
         }
         printf("YOU WIN!\n");
-    } else
+    } 
+    else
     {
         switch(pc_choice)
         {
@@ -218,19 +232,23 @@ void start_game(int number_of_rounds)
         {
             printf("You have won this game!\n");
             break;
-        } else if (pc_score - p_score> remaining_rounds)
+        }
+        else if (pc_score - p_score> remaining_rounds)
         {
             printf("The computer has won this game!\n");
             break;
-        } else if (p_score == pc_score && i == number_of_rounds - 1)
+        } 
+        else if (p_score == pc_score && i == number_of_rounds - 1)
         {
             printf("We have a draw!\n");
             break;
-        } else if (p_score > pc_score && i == number_of_rounds - 1)
+        } 
+        else if (p_score > pc_score && i == number_of_rounds - 1)
         {
             printf("You have won this game!\n");
             break;
-        } else if (i ==  number_of_rounds - 1)
+        } 
+        else if (i ==  number_of_rounds - 1)
         {
             printf("The computer has won this game!\n");
             break;
