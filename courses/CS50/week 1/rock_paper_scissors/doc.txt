@@ -1,0 +1,29 @@
+Overview: Rock, Paper, Scissors is a 2-player game in which a player wins if he scores more points than his opponent.
+In each round, each player chooses one of three options: rock, paper, scissors. The rule is rock beats scissors, scissors cut paper, and paper covers rock.
+A player gains one point if and only if his choice defeats his opponent's, and scores no points othewise.
+
+Game design for each phase:
+Phase 1: Single play against computer with chosen number of rounds
+
+Player:
+- Sprite representation is not needed at this stage.
+- p_score represents their score, and p_choice represents their current choice.
+- A player earns 1 point if he defeats the computer.
+
+Computer: 
+- Sprite representation is not needed at this stage.
+- pc_score represents its score, and pc_choice represents its current choice.
+- The computer earns 1 point if it defeats the player.
+
+Game:
+- needs to keep track of num_rounds
+
+Game logic:
+1. Print welcome screen
+2. Ask for n number of rounds to play from player
+3. Loop through n number of rounds, and in each round:
+    3.1. Ask the user to choose from 1 of 3 options: rock, paper, scissors
+    3.2. Get an option from the computer
+    3.3. Display results
+    3.4. Display points
+    3.5. Stop game and announce winner once the result is determined.
