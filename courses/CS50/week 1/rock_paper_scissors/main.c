@@ -1,9 +1,11 @@
 // Simulate the classic game rock, paper, scissors
 
 #include "cs50.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #define ROCK 'r'
 #define PAPER 'p'
@@ -54,6 +56,7 @@ void print_welcome_screen(void);
 // Game logic
 int get_rounds_num(void);
 void start_game(int);
+int is_input_match(string, string);
 char get_player_choice(void);
 void update_game(void);
 void display_computer_choice(void);
@@ -84,13 +87,70 @@ void print_welcome_screen(void)
     printf("Welcome to the classic Rock, Paper, Scissors! We wish you a happy experience!\n");
 }
 
+// Returns true if one of INPUT_STRING and MATCH_STRING is the prefix of the other one, ignoring the leading white spaces
+int is_input_match(string input_string, string match_string)
+{
+    // Check if input_string is NULL or match_string is NULL to safeguard segmentation fault
+    if (!input_string || !match_string)
+    {
+        return 0;
+    }
+
+    size_t length_match_string = strlen(match_string);
+
+    //Removing leading whitespace characters
+    while (*input_string && (isspace((unsigned char) *input_string)))
+    {
+        input_string++;
+    }
+
+    size_t length_input_string = strlen(input_string);
+
+    for (size_t i = 0; i < length_input_string && i < length_match_string; i++)
+    {
+        char input_string_ch = input_string[i];
+        char match_string_ch = match_string[i];
+        if (tolower((unsigned char) input_string_ch) != tolower((unsigned char) match_string_ch))
+        {
+            return 0;
+        } 
+    }
+
+    // Check if input_string is an empty line
+    return length_input_string > 0;
+}
+
 char get_player_choice(void)
 {
     char p_choice = DEFAULT_STORE;
 
     do
     {
-        p_choice = get_char("Pick an option amongst rock(r), paper(p), or scissors(s): ");
+        // Robust input handling
+        string input_string = get_string("Pick an option amongst rock(r), paper(p), or scissors(s): ");
+
+        // Safeguard against Ctrl + D ---> make stdin at EOF
+        if (!input_string)
+        {
+            if (feof(stdin))
+            {
+                puts("\nNo input(EOF). Exiting!");
+                exit(0);
+            }
+        }
+        
+        if (is_input_match(input_string, "rock"))
+        {
+            p_choice = ROCK;
+        } else if (is_input_match(input_string, "paper"))
+        {
+            p_choice = PAPER;
+        } else if (is_input_match(input_string, "scissors"))
+        {
+            p_choice = SCISSORS;
+        }
+        
+        free(input_string);
     } 
     while (p_choice != ROCK && p_choice != PAPER && p_choice != SCISSORS);
 

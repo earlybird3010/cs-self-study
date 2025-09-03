@@ -83,6 +83,7 @@ string get_string(va_list *args, const char *format, ...)
         return NULL;
     }
 
+
     // Growable buffer for characters
     string buffer = NULL;
 

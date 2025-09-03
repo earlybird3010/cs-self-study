@@ -42,6 +42,9 @@ Player:
 Computer:
 
 Game:
-
+- nice trick for skipping leading whitespaces of a string in c:
+while (*str && isspace((unsinged char) *str)) str++;
+- prompting the user for a choice might receive Ctrl + D ---> returns NULL and sends stdin to EOF
+---> infinite loop because get_string won't read anything input from us. Solution: must handle case separately
 Game logic:
 - Prompting a correct user input is not easy ---> use functions in cs50.h
