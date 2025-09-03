@@ -54,9 +54,7 @@ List what’s needed to install and run this project.
 
 ```bash
 # Example (edit based on your tech)
-gcc --version        # for C projects
-python3 --version    # for Python
-node --version       # for Node.js
+gcc --version=c11        # for C projects
 ```
 
 ### 🔧 Installation
