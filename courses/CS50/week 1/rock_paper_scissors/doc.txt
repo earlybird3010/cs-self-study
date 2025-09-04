@@ -1,50 +1,78 @@
-Overview: Rock, Paper, Scissors is a 2-player game in which a player wins if they score more points than their opponent.
-In each round, each player chooses one of three options: rock, paper, or scissors. The rule is rock beats scissors, scissors cut paper, and paper covers rock.
-A player gains one point if and only if their choice defeats their opponent's, and scores no points otherwise.
+DEV DIARY — ROCK, PAPER, SCISSORS (PHASE 1)DEV DIARY — ROCK, PAPER, SCISSORS (PHASE 1)
 
-Game design for each phase:
-Phase 1: Single player against computer with a chosen number of rounds
+Overview
 
-Player:
-- Sprite representation is not needed at this stage.
-- p_score: player's score, is_p_win: is player winning?, p_choice: player's choice of r,p,s
-- A player earns 1 point if he defeats the computer.
+- Two-player game. A player wins the match by finishing with more points than their opponent.
 
-Computer: 
-- Sprite representation is not needed at this stage.
-- pc_score: pc's score, is_pc_win: is pc winning?, pc_choice: computer's choice for r,p,s
-- The computer earns 1 point if it defeats the player.
+- Per round: rock beats scissors, scissors cut paper, paper covers rock.
 
-Game:
-- num_rounds represents the number of rounds of the game
-- prompts the user for a choice amongst rock, paper, and scissors
-- determine who wins based on 2 choices
-- update state of the game
-- display points
-- display results (if determined)
+- Scoring: 1 point for a win, 0 for a loss or a tie.
 
-Game logic:
-1. Print welcome screen
-2. Ask for n number of rounds to play from the player
-3. Loop through n number of rounds, and in each round:
-    3.1. Ask the user to choose from 1 of 3 options: rock, paper, scissors
-    3.2. Get an option from the computer
-    3.3. Display the computer's choice
-    3.4. Display the result of the current round
-    3.5. Display points
-    3.6. Stop the game and announce the winner once the result is determined.
+Phase 1 (single player vs computer)
+Player
 
-Additional C lessons
-Phase 1: Single player against computer with a chosen number of rounds
+- No sprite at this stage.
 
-Player:
+- State: p_score, is_p_win, p_choice (r/p/s).
 
-Computer:
+- Earns 1 point when their choice defeats the computer.
 
-Game:
-- nice trick for skipping leading whitespaces of a string in c:
-while (*str && isspace((unsinged char) *str)) str++;
-- prompting the user for a choice might receive Ctrl + D ---> returns NULL and sends stdin to EOF
----> infinite loop because get_string won't read anything input from us. Solution: must handle case separately
-Game logic:
-- Prompting a correct user input is not easy ---> use functions in cs50.h
+Computer
+
+- No sprite at this stage.
+
+- State: pc_score, is_pc_win, pc_choice (r/p/s).
+
+- Earns 1 point when its choice defeats the player.
+
+Game
+
+- num_rounds = total rounds for the match.
+
+- Prompts the player for a choice; computer picks uniformly at random.
+
+- Determines winner for each round; updates scores; prints result and scoreboard.
+
+Game logic (phase 1)
+
+1. Print welcome screen (ASCII art).
+
+2. Ask for number of rounds (positive integer).
+
+3. For each round:
+    3.1) Prompt player (r/p/s; case-insensitive; accepts prefixes like “ro”, “rocky” by design).
+    3.2) Computer chooses randomly.
+    3.3) Display the computer’s choice.
+    3.4) Display the round result with a rule line (e.g., “PAPER covers ROCK!”).
+    3.5) Display scores.
+    3.6) Early stop when winner is determined:
+    - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
+    - Ties still consume a round.
+
+Key decisions
+
+- Input matching: prefix OK (e.g., “scissor”, “rocky”), case-insensitive, leading spaces ignored.
+
+- Ties: 0 points to both; round still counts.
+
+- Early-stop rule: use “lead > remaining rounds” (stronger than simple “first to”).
+
+- RNG seeded once at start with srand((unsigned) time(NULL)).
+
+Notes / C lessons
+
+- Skip leading whitespace in a C string:
+  while (*str && isspace((unsigned char)*str)) str++;
+
+- get_string may return NULL at EOF (Ctrl-D). Handle this to avoid infinite prompts:
+  on EOF, print a message and exit (current behavior); on I/O error, perror/clearerr and re-prompt.
+
+- CS50 get_int can return INT_MAX on read failure. Check feof(stdin) to detect EOF and exit cleanly; otherwise re-prompt.
+
+- Round outcome uses modulo rule: (player_value - computer_value + 3) % 3 → 0 tie, 1 player win, 2 player loss.
+
+Resume bullets (phase 1)
+
+- Implement a console Rock–Paper–Scissors in C with robust input handling (case-insensitive, prefix matching, EOF/I/O error handling).
+
+- Modularize code into functions (input parsing, decision logic) for readability and reliability.

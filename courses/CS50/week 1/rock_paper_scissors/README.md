@@ -24,12 +24,12 @@ This project simulates two players playing rock, paper, scissors. It’s a found
 ## ✨ Features
 
 ### Core Logic
-- [ ] Single play against computer with chosen number of rounds
+- [x] Single play against computer with chosen number of rounds
 - [ ] Multiple levels of difficulty vs. computer
 - [ ] Results history
 - [ ] Customizable player name for record keeping
 
-### Core “GUI” (console)
+### Core “GUI”
 - [ ] Show hand gestures during play (ASCII art)
 - [ ] Display score on screen while playing
 - [ ] Buttons/keys for user’s choice
@@ -49,7 +49,7 @@ This project simulates two players playing rock, paper, scissors. It’s a found
 - Unix-like OS (Linux/macOS)  
   **Tested:** Fedora Linux 40+ (GCC)
 
-> Note: `cs50.c`/`cs50.h` are included in this folder; no system C S50 install required.
+> Note: `cs50.c`/`cs50.h` are included in this folder; no system CS50 install required.
 
 ---
 
@@ -63,29 +63,40 @@ git clone https://github.com/earlybird3010/cs-self-study.git
 cd 'cs-self-study/courses/CS50/week 1/rock_paper_scissors'
 
 # build and run
-gcc -std=c11 -Wall -Wextra -Werror main.c cs50.c -o main
-./main
+gcc -std=c11 -Wall -Wextra -Werror main.c cs50.c -o main 
 
-🗂 Project Structure
+./main
+```
+---
+
+## 🗂 Project Structure
+
+```markdown
 rock_paper_scissors/
 ├── cs50.c        # vendored CS50 library source
 ├── cs50.h        # vendored CS50 header
 ├── main.c        # program source
 ├── README.md
-└── doc.txt       # notes / tracker
-# (build artifacts like bin/rps are not committed)
+└── doc.txt       # notes tracker
+```
 
-⚙️ Built With
+---
+
+## ⚙️ Built With
 
 Language: C (GCC/Clang)
 
-Libraries: cs50.c, cs50.h
+Libraries: CS50 (vendored: `cs50.c`, `cs50.h`)
 
-🤝 Contributing
+---
+
+## 🤝 Contributing
 
 Pull requests are welcome! Fork the repo and open a PR.
 
-📄 License
+---
+
+## 📄 License
 
 MIT
  © Chau Nguyen

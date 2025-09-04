@@ -3,6 +3,7 @@
 #include "cs50.h"
 #include <ctype.h>
 #include <stdio.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
@@ -58,8 +59,10 @@ int get_rounds_num(void);
 void start_game(int);
 int is_input_match(string, string);
 char get_player_choice(void);
-void update_game(void);
+int get_choice_value(char);
+void update_game(char, char);
 void display_computer_choice(void);
+void print_rules(char choice);
 void display_result(void);
 
 int main(void)
@@ -72,7 +75,7 @@ int main(void)
     printf("Okay, we're going to play %i rounds.\n", number_of_rounds);
     
     // Seed the random generator
-    srand(time(NULL));
+    srand((unsigned) time(NULL));
 
     start_game(number_of_rounds);
 
@@ -134,9 +137,17 @@ char get_player_choice(void)
         {
             if (feof(stdin))
             {
-                puts("\nNo input(EOF). Exiting!");
+                printf("\nNo input(EOF). Exiting!\n");
                 exit(0);
             }
+
+            if (ferror(stdin)) 
+            { 
+                perror("stdin"); 
+                clearerr(stdin); 
+                continue; 
+            }
+
         }
         
         if (is_input_match(input_string, "rock"))
@@ -148,9 +159,10 @@ char get_player_choice(void)
         } else if (is_input_match(input_string, "scissors"))
         {
             p_choice = SCISSORS;
+        } else
+        {
+            printf("Please enter r/p/s or any similar word to rock or paper or scissors.\n");
         }
-        
-        free(input_string);
     } 
     while (p_choice != ROCK && p_choice != PAPER && p_choice != SCISSORS);
 
@@ -164,57 +176,57 @@ int get_rounds_num(void)
     do
     {
         number_of_rounds = get_int("How many rounds do you want to play? ");
+
+        // Safeguard against Ctrl + D ---> make stdin at EOF
+        if (number_of_rounds == INT_MAX)
+        {
+            if (feof(stdin))
+            {
+                printf("\nNo input(EOF). Exiting!\n");
+                exit(0);
+            }
+
+            if (ferror(stdin)) 
+            { 
+                perror("stdin"); 
+                clearerr(stdin); 
+                continue; 
+            }
+        }
+
+        if (number_of_rounds > 0)
+        {
+            return number_of_rounds;
+        }
+
+        printf("Please enter a positive integer!\n");
     } 
     while (number_of_rounds <= 0);
-    
-    return number_of_rounds;
+}
+
+// Return the corresponding value of CHOICE (r, p, or s)
+int get_choice_value(char choice)
+{
+    switch(choice) {
+        case ROCK:
+            return ROCK_VALUE;
+        case PAPER:
+            return PAPER_VALUE;
+        default:
+            return SCISSORS_VALUE;
+    }
 }
 
 // Update state of game when get results from 1 round of rock, paper, scissors
-void update_game(void)
+void update_game(char p_choice, char pc_choice)
 {
-    if (p_choice == ROCK && pc_choice == PAPER)
-    {
-        is_p_win = 0;
-        is_pc_win = 1;
-        pc_score += 1;
-    } 
-    else if (p_choice == ROCK && pc_choice == SCISSORS)
-    {
-        is_p_win = 1;
-        is_pc_win = 0;
-        p_score += 1;
-    } 
-    else if (p_choice == PAPER && pc_choice == ROCK)
-    {
-        is_p_win = 1;
-        is_pc_win = 0;
-        p_score += 1;
-    } 
-    else if (p_choice == PAPER && pc_choice == SCISSORS)
-    {
-        is_p_win = 0;
-        is_pc_win = 1;
-        pc_score += 1;
-    } 
-    else if (p_choice == SCISSORS && pc_choice == PAPER)
-    {
-        is_p_win = 1;
-        is_pc_win = 0;
-        p_score += 1;
-    } 
-    else if (p_choice == SCISSORS && pc_choice == ROCK)
-    {
-        is_p_win = 0;
-        is_pc_win = 1;
-        pc_score += 1;
-    } 
-    else
-    {
-        is_p_win = 0;
-        is_pc_win = 0;
-    }
+    int p_choice_value = get_choice_value(p_choice), pc_choice_value = get_choice_value(pc_choice);
 
+    is_p_win = ((p_choice_value - pc_choice_value + 3) % 3 == 1);
+    is_pc_win = ((pc_choice_value - p_choice_value + 3) % 3 == 1);
+
+    p_score += is_p_win;
+    pc_score += is_pc_win;
 }
 
 void display_computer_choice(void)
@@ -233,43 +245,35 @@ void display_computer_choice(void)
     }
 }
 
+// Print the basic rule of rock, paper, scissors
+void print_rules(char winner_choice)
+{
+    switch(winner_choice)
+    {
+        case ROCK:
+            printf("ROCK smashes SCISSORS!\n");
+            break;
+        case PAPER:
+            printf("PAPER covers ROCK!\n");
+            break;
+        case SCISSORS:
+            printf("SCISSORS cut PAPER!\n");
+    }
+}
+
 // Display result of the current round
 void display_result(void)
 {
     if (is_p_win == is_pc_win)
     {
         printf("DRAW!\n");
+        return;
     } 
-    else if (is_p_win)
-    {
-        switch(p_choice)
-        {
-            case ROCK:
-                printf("ROCK smashes SCISSORS!\n");
-                break;
-            case PAPER:
-                printf("PAPER covers ROCK!\n");
-                break;
-            case SCISSORS:
-                printf("SCISSORS cuts PAPER!\n");
-        }
-        printf("YOU WIN!\n");
-    } 
-    else
-    {
-        switch(pc_choice)
-        {
-            case ROCK:
-                printf("ROCK smashes SCISSORS!\n");
-                break;
-            case PAPER:
-                printf("PAPER covers ROCK!\n");
-                break;
-            case SCISSORS:
-                printf("SCISSORS cuts PAPER!\n");
-        }
-        printf("YOU LOSE!\n");
-    }
+    
+    char winner_choice = (is_p_win) ? p_choice : pc_choice;
+    print_rules(winner_choice);
+
+    printf(is_p_win ? "YOU WIN!\n" : "YOU LOSE!\n");
 }
 
 // Start game loop until a result is obtained
@@ -280,20 +284,20 @@ void start_game(int number_of_rounds)
         p_choice = get_player_choice();
         pc_choice = pc_choose_random();
         display_computer_choice();
-        update_game();
+        update_game(p_choice, pc_choice);
         display_result();
 
         //Display points
         printf("Player: %i      Computer: %i\n", p_score, pc_score);
 
         //Check for endgame conditions
-        int remaining_rounds = number_of_rounds - 1 -i;
+        int remaining_rounds = number_of_rounds - 1 - i;
         if (p_score - pc_score > remaining_rounds)
         {
             printf("You have won this game!\n");
             break;
         }
-        else if (pc_score - p_score> remaining_rounds)
+        else if (pc_score - p_score > remaining_rounds)
         {
             printf("The computer has won this game!\n");
             break;
@@ -313,30 +317,19 @@ void start_game(int number_of_rounds)
             printf("The computer has won this game!\n");
             break;
         }
-        //system("clear");
     }
 }
 
 // Choose ROCK, PAPER, SCISSORS randomly
 char pc_choose_random(void)
 {
-    int max_value = 2, min_value = 0;
-    char error = 'e';
-
-    int choice = rand() % (max_value - min_value + 1) + min_value;
-
-    switch(choice)
+    switch(rand() % (SCISSORS_VALUE - ROCK_VALUE + 1) + ROCK_VALUE)
     {
         case ROCK_VALUE:
             return ROCK;
-            break;
         case PAPER_VALUE:
             return PAPER;
-            break;
-        case SCISSORS_VALUE:
+        default:
             return SCISSORS;
-            break;
     }
-
-    return error;
 }
