@@ -18,12 +18,12 @@
 
 // Player
 int p_score = 0;
-int is_p_win = 0;
+bool is_p_win = false;
 char p_choice;
 
 // Computer
 int pc_score = 0;
-int is_pc_win = 0;
+bool is_pc_win = false;
 char pc_choice;
 char pc_choose_random(void);
 
@@ -225,8 +225,8 @@ void update_game(char p_choice, char pc_choice)
     is_p_win = ((p_choice_value - pc_choice_value + 3) % 3 == 1);
     is_pc_win = ((pc_choice_value - p_choice_value + 3) % 3 == 1);
 
-    p_score += is_p_win;
-    pc_score += is_pc_win;
+    p_score += (int) is_p_win;
+    pc_score += (int) is_pc_win;
 }
 
 void display_computer_choice(void)
@@ -292,17 +292,14 @@ void start_game(int number_of_rounds)
 
         //Check for endgame conditions
         int remaining_rounds = number_of_rounds - 1 - i;
-        if (p_score - pc_score > remaining_rounds)
+
+        if (abs(p_score - pc_score) > remaining_rounds)
         {
-            printf("You have won this game!\n");
+            printf(p_score > pc_score ? "You have won this game!\n" : "The computer has won this game!\n");
             break;
         }
-        else if (pc_score - p_score > remaining_rounds)
-        {
-            printf("The computer has won this game!\n");
-            break;
-        } 
-        else if (p_score == pc_score && i == number_of_rounds - 1)
+
+        if (p_score == pc_score && i == number_of_rounds - 1)
         {
             printf("We have a draw!\n");
             break;
