@@ -49,6 +49,18 @@ Game logic (phase 1)
     - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
     - Ties still consume a round.
 
+Phase 2 (4 levels of difficulties)
+
+Computer
+
+- Easy strategy: helps the player to win
+
+- Medium strategy: on each round, chooses uniformly at random from rock/paper/scissors. 
+
+- Hard strategy: uses frequency to determine moves
+
+- Impossible strategy: uses Markov-1 predictor
+
 Key decisions
 
 - Input matching: prefix OK (e.g., “scissor”, “rocky”), case-insensitive, leading spaces ignored.
@@ -61,6 +73,12 @@ Key decisions
 
 Notes / C lessons
 
+Phase 1:
+- rand maintains a pure function to return an int based on its internal state. In other words, if different rands
+start with the same seed, or starting state, we'll always get the same sequence. By default, the seed value is set to 1,
+so we usually set the seed to an expression that changes every time we run the program, like time(NULL), 
+to generate different sequences.  
+
 - Skip leading whitespace in a C string:
   while (*str && isspace((unsigned char)*str)) str++;
 
@@ -71,7 +89,14 @@ Notes / C lessons
 
 - Round outcome uses modulo rule: (player_value - computer_value + 3) % 3 → 0 tie, 1 player win, 2 player loss.
 
-Resume bullets (phase 1)
+Phase 2:
+
+- Humans rarely follow a mixed NE strategy when playing RPS. Instead, they follow a "win-stay lose-shift" pattern.
+Main sources: https://arxiv.org/pdf/1404.5199 (read the abstract and the empirial conditional response patterns) 
+
+Resume bullets:
+
+Phase 1:
 
 - Implement a console Rock–Paper–Scissors in C with robust input handling (case-insensitive, prefix matching, EOF/I/O error handling).
 

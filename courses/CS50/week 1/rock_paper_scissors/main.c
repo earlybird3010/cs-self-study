@@ -74,7 +74,7 @@ int main(void)
     int number_of_rounds = get_rounds_num();
     printf("Okay, we're going to play %i rounds.\n", number_of_rounds);
     
-    // Seed the random generator
+    // Seed the random generator for different sequences of random output every time we run the program
     srand((unsigned) time(NULL));
 
     start_game(number_of_rounds);
