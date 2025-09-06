@@ -1,0 +1,9 @@
+Functions are useful because:
+- Better organization and structure:
+a big problem is solved by many subproblems
+- Simpler: a function that aims to solve a step
+of a big problem is easier to design, implement, and 
+debug
+- DRY: we can use a function any time we want once it has 
+beed defined
+- Declarations: return_tpe name(argument_list);
