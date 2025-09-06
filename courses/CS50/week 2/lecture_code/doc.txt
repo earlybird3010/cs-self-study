@@ -1,0 +1,11 @@
+- printf strange behavior: %f means that the place can be replaced by the strings of both float and double.
+- Implementation: both float and double are promoted to double upon being passed to printf 
+- Same for int and char
+
+- The factor that decides a value's type at a specific place are the % specification
+conversion in the format string. As a result, if you provide a mismatch value; for example,
+4 for %f, the printf functions attempts to read 8 bytes to get the corresponding value, but 
+since 4 is only 4 bytes in storage, an error will occur.
+
+- What happens without promotion?
+Don't know.
