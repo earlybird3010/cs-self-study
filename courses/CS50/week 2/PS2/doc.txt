@@ -1,0 +1,1 @@
+Notice that get_string returns a string stored at a writable memory region, so we can mutate it.
