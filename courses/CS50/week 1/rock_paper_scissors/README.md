@@ -48,8 +48,7 @@ This project simulates two players playing rock, paper, scissors. It’s a found
 - C compiler: GCC or Clang
 - Unix-like OS (Linux/macOS)  
   **Tested:** Fedora Linux 40+ (GCC)
-
-> Note: `cs50.c`/`cs50.h` are included in this folder; no system CS50 install required.
+- Install CS50 library: https://github.com/cs50/libcs50 
 
 ---
 
@@ -63,7 +62,7 @@ git clone https://github.com/earlybird3010/cs-self-study.git
 cd 'cs-self-study/courses/CS50/week 1/rock_paper_scissors'
 
 # build and run
-gcc -std=c11 -Wall -Wextra -Werror main.c cs50.c -o main 
+gcc -std=c11 -Wall -Wextra -Werror main.c -o main -lcs50
 
 ./main
 ```

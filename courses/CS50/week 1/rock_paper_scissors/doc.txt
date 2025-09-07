@@ -50,16 +50,42 @@ Game logic (phase 1)
     - Ties still consume a round.
 
 Phase 2 (4 levels of difficulties)
-
 Computer
 
-- Easy strategy: helps the player to win
+- Easy strategy: helps the player to win. To avoid being boring, choose randomly 60% of the time, while 
+choose a move that intends to lose for the rest. 
 
-- Medium strategy: on each round, chooses uniformly at random from rock/paper/scissors. 
+- Medium strategy: on each round, chooses uniformly at random from rock/paper/scissors.  
 
 - Hard strategy: uses frequency to determine moves
 
 - Impossible strategy: uses Markov-1 predictor
+
+Game
+
+State:
+
+- mode = option for level of difficulty
+
+- Prompts the player for a choice; computer picks based on strategy chosen.
+
+
+Game logic (phase 1)
+
+1. Print welcome screen (ASCII art).
+
+2. Ask for number of rounds (positive integer).
+
+3. For each round:
+    3.1) Prompt player for num_rounds (r/p/s; case-insensitive; accepts prefixes like “ro”, “rocky” by design).
+    3.2) Prompt player for mode (easy/medium/hard/expert; case_insensitive; doesn't accept "robust" inputs).
+    3.3) Computer chooses based on strategy picked.
+    3.4) Display the computer’s choice.
+    3.5) Display the round result with a rule line (e.g., “PAPER covers ROCK!”).
+    3.6) Display scores.
+    3.7) Early stop when winner is determined:
+    - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
+    - Ties still consume a round.
 
 Key decisions
 

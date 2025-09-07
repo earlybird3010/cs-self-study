@@ -15,6 +15,10 @@
 #define PAPER_VALUE 1
 #define SCISSORS_VALUE 2
 #define DEFAULT_STORE ' '
+#define EASY 'e'
+#define NORMAL 'n'
+#define HARD 'h'
+#define EXPERT 'x'
 
 // Player
 int p_score = 0;
@@ -25,7 +29,13 @@ char p_choice;
 int pc_score = 0;
 bool is_pc_win = false;
 char pc_choice;
-char pc_choose_random(void);
+char pc_choose_normal(void);
+char pc_choose_easy(void);
+char pc_choose_lose(void);
+
+// Game
+char mode;
+void print_mode(char);
 
 // Welcome screen
 const char *rock_art =
@@ -57,7 +67,8 @@ void print_welcome_screen(void);
 // Game logic
 int get_rounds_num(void);
 void start_game(int);
-int is_input_match(string, string);
+bool is_input_match(string, string);
+void set_mode(void);
 char get_player_choice(void);
 int get_choice_value(char);
 void update_game(char, char);
@@ -72,7 +83,9 @@ int main(void)
     
     // Get number of rounds and display result
     int number_of_rounds = get_rounds_num();
-    printf("Okay, we're going to play %i rounds.\n", number_of_rounds);
+    set_mode();
+    printf("Okay, we're going to play %i rounds ", number_of_rounds);
+    print_mode(mode);
     
     // Seed the random generator for different sequences of random output every time we run the program
     srand((unsigned) time(NULL));
@@ -91,12 +104,12 @@ void print_welcome_screen(void)
 }
 
 // Returns true if one of INPUT_STRING and MATCH_STRING is the prefix of the other one, ignoring the leading white spaces
-int is_input_match(string input_string, string match_string)
+bool is_input_match(string input_string, string match_string)
 {
     // Check if input_string is NULL or match_string is NULL to safeguard segmentation fault
     if (!input_string || !match_string)
     {
-        return 0;
+        return false;
     }
 
     size_t length_match_string = strlen(match_string);
@@ -115,12 +128,67 @@ int is_input_match(string input_string, string match_string)
         char match_string_ch = match_string[i];
         if (tolower((unsigned char) input_string_ch) != tolower((unsigned char) match_string_ch))
         {
-            return 0;
+            return false;
         } 
     }
 
     // Check if input_string is an empty line
     return length_input_string > 0;
+}
+
+void print_mode(char mode)
+{
+    if (mode == EASY)
+    {
+        printf("in easy mode.\n");
+    }
+    else if (mode == NORMAL)
+    {
+        printf("in normal mode.\n");
+    }
+    else if (mode == HARD)
+    {
+        printf("in hard mode.\n");
+    }
+    else if (mode == EXPERT)
+    {
+        printf("in expert mode.\n");
+    }
+}
+
+void set_mode(void)
+{
+    mode = DEFAULT_STORE;
+
+    do
+    {
+        // Strict input handling
+        mode = get_char("Pick amongst easy(e), normal(n), hard(h), or expert(x): ");
+
+        // Safeguard against non-readable lines
+        if (mode == CHAR_MAX)
+        {
+            if (feof(stdin))
+            {
+                printf("\nNo input (EOF). Exiting!\n");
+                exit(0);
+            }
+
+            if (ferror(stdin))
+            {
+                perror("stdin");
+                clearerr(stdin);
+                continue;
+            }
+        }
+
+        if (mode == 'e' || mode == 'n' || mode == 'h' || mode == 'x')
+        {
+            return;
+        }
+
+        printf("\nPlease enter a valid option!");
+    } while (mode != 'e' && mode != 'n' && mode != 'h' && mode != 'x');
 }
 
 char get_player_choice(void)
@@ -281,8 +349,19 @@ void start_game(int number_of_rounds)
 {
     for (int i = 0; i < number_of_rounds; i++)
     {
+        // At this time, pc_choice, p_choice, is_p_win, is_pc_win describe prev round
+        // Computer chooses based on mode except for first round
+        if (i == 0 || mode == NORMAL)
+        {
+            pc_choice = pc_choose_normal();
+        }
+        else if (mode == EASY)
+        {
+            pc_choice = pc_choose_easy();
+        }
+
         p_choice = get_player_choice();
-        pc_choice = pc_choose_random();
+
         display_computer_choice();
         update_game(p_choice, pc_choice);
         display_result();
@@ -318,7 +397,7 @@ void start_game(int number_of_rounds)
 }
 
 // Choose ROCK, PAPER, SCISSORS randomly
-char pc_choose_random(void)
+char pc_choose_normal(void)
 {
     switch(rand() % (SCISSORS_VALUE - ROCK_VALUE + 1) + ROCK_VALUE)
     {
@@ -328,5 +407,41 @@ char pc_choose_random(void)
             return PAPER;
         default:
             return SCISSORS;
+    }
+}
+
+// Choose ROCK, PAPER, SCISSORS randomly for 60% of the time, while intend to lose for the rest of it
+char pc_choose_easy(void)
+{
+    // Use probability to pick lose intentionally or randomly
+    int choice = rand() % 10;
+    
+    // Carry out the pc_choose_normal or pc_choose_lose
+    if (choice >= 0 && choice <= 5)
+    {
+        return pc_choose_normal();
+    }
+        
+    return pc_choose_lose();
+}
+
+// Helper function to always pick the losing move according to the general pattern
+char pc_choose_lose(void)
+{
+    // General behavior of a person: win or tie ---> keep move, 
+    // lose ---> shift to move that beats opponent's prev move
+    if (is_p_win || is_pc_win)
+    {
+        return pc_choice;
+    }
+    
+    switch(p_choice)
+    {
+        case ROCK:
+            return SCISSORS;
+        case PAPER:
+            return ROCK;
+        default:
+            return PAPER;
     }
 }
