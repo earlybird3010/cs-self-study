@@ -1,4 +1,4 @@
-DEV DIARY — ROCK, PAPER, SCISSORS (PHASE 1)DEV DIARY — ROCK, PAPER, SCISSORS (PHASE 1)
+DEV DIARY — ROCK, PAPER, SCISSORS
 
 Overview
 
@@ -49,20 +49,20 @@ Game logic (phase 1)
     - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
     - Ties still consume a round.
 
-Phase 2 (4 levels of difficulties)
+Phase 2 (4 levels of difficulty)
 Player
 
-- State: prev_moves
- 
+- State: prev_choices
+
 Computer
 
 - Easy strategy: 60% random, 40% intentionally loses based on last round's outcome
-(win/lose -> repeat last move, tie -> pick the move that loses to last move)
+(win/lose -> repeat last choice, tie -> pick the choice that loses to last choice)
 
 - Normal strategy: on each round, choose uniformly at random from rock/paper/scissors.   
 
 - Hard strategy: 15% random, 85% counter the most frequent player's choice in 
-recent history. If tie, choose the most recent move.
+recent history. If tie, choose the most recent choice.
 
 - Expert strategy: uses Markov-1 predictor
 
@@ -83,13 +83,13 @@ Game logic (phase 2)
 
 3. Ask for mode (e/n/h/x)
 
-3. For each round:
-    3.1) Computer chooses based on strategy picked.
-    3.2) Prompt player for choice (r/p/s; case-insensitive; accepts prefixes like “ro”, “rocky” by design).
-    3.3) Display the computer’s choice.
-    3.4) Display the round result with a rule line (e.g., “PAPER covers ROCK!”).
-    3.5) Display scores.
-    3.6) Early stop when winner is determined:
+4. For each round:
+    4.1) Computer chooses based on strategy picked.
+    4.2) Prompt player for choice (r/p/s; case-insensitive; accepts prefixes like “ro”, “rocky” by design).
+    4.3) Display the computer’s choice.
+    4.4) Display the round result with a rule line (e.g., “PAPER covers ROCK!”). (must update game here)
+    4.5) Display scores.
+    4.6) Early stop when winner is determined:
     - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
     - Ties still consume a round.
 
@@ -122,8 +122,11 @@ to generate different sequences.
 
 Phase 2:
 
-- Humans rarely follow a mixed NE strategy when playing RPS. Instead, they follow a "win-stay lose-shift" pattern.
+- Humans rarely follow a mixed NE strategy when playing RPS. Instead, they follow a "win-stay,lose-shift" pattern.
 Main sources: https://arxiv.org/pdf/1404.5199 (read the abstract and the empirical conditional response patterns) 
+
+- At each round the computer commits before the player inputs; i.e, computer's strategy uses only previous round data
+---> avoid using an additional variable for a player's previous input.
 
 Resume bullets:
 
@@ -136,3 +139,6 @@ Phase 1:
 Phase 2:
 
 - Implement an easy level of difficulty which sometimes loses to players who use the win-keep lose-shift pattern
+
+- Implement a hard level of difficulty which punishes a player's overused move
+

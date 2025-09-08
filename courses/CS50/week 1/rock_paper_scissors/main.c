@@ -456,7 +456,7 @@ char pc_choose_easy(void)
     return pc_choose_lose_CR();
 }
 
-// Helper function to pick the losing choice assuming the player's conditional response: win-keep lose-shift
+// Helper function to pick the losing choice assuming the player's conditional response: win-stay lose-shift
 char pc_choose_lose_CR(void)
 {
     // General behavior of a person: win or tie ---> keep choice, 
