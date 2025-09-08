@@ -50,14 +50,19 @@ Game logic (phase 1)
     - Ties still consume a round.
 
 Phase 2 (4 levels of difficulties)
+Player
+
+- State: prev_moves
+ 
 Computer
 
 - Easy strategy: 60% random, 40% intentionally loses based on last round's outcome
 (win/lose -> repeat last move, tie -> pick the move that loses to last move)
 
-- Normal strategy: on each round, chooses uniformly at random from rock/paper/scissors.  
+- Normal strategy: on each round, choose uniformly at random from rock/paper/scissors.   
 
-- Hard strategy: uses frequency to determine moves
+- Hard strategy: 15% random, 85% counter the most frequent player's choice in 
+recent history. If tie, choose the most recent move.
 
 - Expert strategy: uses Markov-1 predictor
 

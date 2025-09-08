@@ -8,6 +8,7 @@
 #include <time.h>
 #include <string.h>
 
+#define EMPTY '\0'
 #define ROCK 'r'
 #define PAPER 'p'
 #define SCISSORS 's'
@@ -17,14 +18,17 @@
 #define DEFAULT_STORE ' '
 #define EASY 'e'
 #define PCT_RAND_EASY 60
+#define PCT_RAND_HARD 15
 #define NORMAL 'n'
 #define HARD 'h'
 #define EXPERT 'x'
+#define P_PREV_CHOICES 7
 
 // Player
 int p_score = 0;
 bool is_p_win = false;
 char p_choice;
+char prev_choices[P_PREV_CHOICES];
 
 // Computer
 int pc_score = 0;
@@ -32,7 +36,10 @@ bool is_pc_win = false;
 char pc_choice;
 char pc_choose_normal(void);
 char pc_choose_easy(void);
-char pc_choose_lose(void);
+char pc_choose_lose_CR(void);
+char pc_choose_hard(char [], int);
+char pc_choose_win_frequency(char [], int);
+char most_frequent_recent_choice(char, char, char, int, int, int, char []);
 
 // Game
 char mode;
@@ -70,8 +77,10 @@ int get_rounds_num(void);
 void start_game(int);
 bool is_input_match(string, string);
 void set_mode(void);
+void set_prev_choices(int);
 char get_player_choice(void);
 int get_choice_value(char);
+void update_prev_choices(char [], int, char);
 void update_game(char, char);
 void display_computer_choice(void);
 void print_rules(char choice);
@@ -87,6 +96,7 @@ int main(void)
     set_mode();
     printf("Okay, we're going to play %i rounds ", number_of_rounds);
     print_mode(mode);
+    set_prev_choices(P_PREV_CHOICES);
     
     // Seed the random generator for different sequences of random output every time we run the program
     srand((unsigned) time(NULL));
@@ -188,8 +198,17 @@ void set_mode(void)
             return;
         }
 
-        printf("\nPlease enter a valid option!");
+        printf("Please enter a valid option!\n");
     } while (mode != 'e' && mode != 'n' && mode != 'h' && mode != 'x');
+}
+
+// Set the initial state for the player's last CHOICES_LENGTH choices
+void set_prev_choices(int choices_length)
+{
+    for (int i = 0; i < choices_length; i++)
+    {
+        prev_choices[i] = EMPTY;   
+    }
 }
 
 char get_player_choice(void)
@@ -296,6 +315,8 @@ void update_game(char p_choice, char pc_choice)
 
     p_score += (int) is_p_win;
     pc_score += (int) is_pc_win;
+
+    update_prev_choices(prev_choices, P_PREV_CHOICES, p_choice);
 }
 
 void display_computer_choice(void)
@@ -360,6 +381,14 @@ void start_game(int number_of_rounds)
         {
             pc_choice = pc_choose_easy();
         }
+        else if (mode == HARD)
+        {
+            pc_choice = pc_choose_hard(prev_choices, P_PREV_CHOICES);
+        }
+        else
+        {
+            pc_choice = pc_choose_normal();
+        }
 
         p_choice = get_player_choice();
 
@@ -411,26 +440,27 @@ char pc_choose_normal(void)
     }
 }
 
-// Choose ROCK, PAPER, SCISSORS randomly for 60% of the time, while intend to lose for the rest of it
+// Choose ROCK, PAPER, SCISSORS randomly for 60% of the time, while pick the losing choice based on CR 
+// for the rest of it
 char pc_choose_easy(void)
 {
     // Use probability to pick lose intentionally or randomly
-    int choice = rand() % 100;
+    int roll = rand() % 100;
     
-    // Carry out the pc_choose_normal or pc_choose_lose
-    if (choice < PCT_RAND_EASY)
+    // Carry out the pc_choose_normal or pc_choose_lose_CR
+    if (roll < PCT_RAND_EASY)
     {
         return pc_choose_normal();
     }
         
-    return pc_choose_lose();
+    return pc_choose_lose_CR();
 }
 
-// Helper function to always pick the losing move assuming player follows the win-keep lose-shift strategy
-char pc_choose_lose(void)
+// Helper function to pick the losing choice assuming the player's conditional response: win-keep lose-shift
+char pc_choose_lose_CR(void)
 {
-    // General behavior of a person: win or tie ---> keep move, 
-    // lose ---> shift to move that beats opponent's prev move
+    // General behavior of a person: win or tie ---> keep choice, 
+    // lose ---> shift to choice that beats opponent's prev choice
     if (is_p_win || is_pc_win)
     {
         return pc_choice;
@@ -445,4 +475,141 @@ char pc_choose_lose(void)
         default:
             return PAPER;
     }
+}
+
+// Choose rock, paper, scissors randomly for 15% of the time, while choose the winning choice based on frequency
+// for the rest of it 
+char pc_choose_hard(char prev_choices[], int prev_choices_length)
+{
+    // Use probability to pick random or win based on frequency
+    int roll = rand() % 100;
+
+    if (roll < PCT_RAND_HARD)
+    {
+        return pc_choose_normal();
+    }
+    
+    return pc_choose_win_frequency(prev_choices, prev_choices_length);
+}
+
+// Choose the winning choice based on frequency
+char pc_choose_win_frequency(char prev_choices[], int prev_choices_length)
+{
+    // Iterate through the array to keep track of the number of rock, paper, scissors choice made, as well as
+    // their order in terms of recency
+    int count_rock = 0, count_paper = 0, count_scissors = 0;
+    char recency[3] = {'\0', '\0', '\0'};
+
+    for (int i = prev_choices_length - 1; i >= 0; i--)
+    {
+        char choice = prev_choices[i];
+
+        if (choice == EMPTY)
+        {
+            continue;
+        }
+
+        if (recency[0] != choice)
+        {
+            recency[2] = recency[1];
+            recency[1] = recency[0];
+            recency[0] = choice;
+        }
+
+        switch(choice)
+        {
+            case ROCK:
+                count_rock += 1;
+                break;
+            case PAPER:
+                count_paper += 1;
+                break;
+            case SCISSORS:
+                count_scissors += 1;
+                break;
+        }
+    }
+
+    char frequent_recent_choice = most_frequent_recent_choice(ROCK, PAPER, SCISSORS, count_rock, count_paper, count_scissors, recency);
+
+    switch(frequent_recent_choice)
+    {
+        case ROCK:
+            return PAPER;
+            break;
+        case PAPER:
+            return SCISSORS;
+            break;
+        case SCISSORS:
+            return ROCK;
+            break;
+    }
+
+    return '\0';
+}
+
+// Return the most frequent recent choice
+char most_frequent_recent_choice(char choice1, char choice2, char choice3, int count_c1, int count_c2, int count_c3, char recency[])
+{
+    int count_max;
+
+    if (count_c1 >= count_c2)
+    {
+        if (count_c1 >= count_c3)
+        {
+            count_max = count_c1;
+        }
+        else
+        {
+            count_max = count_c3;
+        }
+    }
+    else if (count_c2 >= count_c3)
+    {
+        count_max = count_c2;
+    }
+    else
+    {
+        count_max = count_c3;
+    }
+
+    if (count_max == count_c1 && count_max == count_c2 && count_max == count_c3)
+    {
+        return recency[0];
+    }
+    else if (count_max == count_c1 && count_max == count_c2)
+    {
+        // Pick the tied choice with the most recent occurence
+        return ((recency[0] == choice1 || recency[0] == choice2)? recency[0] : recency[1]);
+    }
+    else if (count_max == count_c1 && count_max == count_c3)
+    {
+        return ((recency[0] == choice1 || recency[0] == choice3)? recency[0] : recency[1]);
+    }
+    else if (count_max == count_c2 && count_max == count_c3)
+    {
+        return (recency[0] == choice2 || recency[0] == choice3)? recency[0] : recency[1];
+    }
+    else if (count_max == count_c1)
+    {
+        return choice1;
+    }
+    else if (count_max == count_c2)
+    {
+        return choice2;
+    }
+    else
+    {
+        return choice3;
+    }
+}
+
+// Push P_CHOICE, the most current choice to the front of PREV_CHOICES 
+void update_prev_choices(char prev_choices[], int prev_choices_length, char p_choice)
+{
+    for (int i = prev_choices_length - 1; i >= 1; i--)
+    {
+        prev_choices[i] = prev_choices[i - 1];
+    }
+    prev_choices[0] = p_choice;
 }
