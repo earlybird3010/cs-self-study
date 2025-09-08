@@ -16,6 +16,7 @@
 #define SCISSORS_VALUE 2
 #define DEFAULT_STORE ' '
 #define EASY 'e'
+#define PCT_RAND_EASY 60
 #define NORMAL 'n'
 #define HARD 'h'
 #define EXPERT 'x'
@@ -414,10 +415,10 @@ char pc_choose_normal(void)
 char pc_choose_easy(void)
 {
     // Use probability to pick lose intentionally or randomly
-    int choice = rand() % 10;
+    int choice = rand() % 100;
     
     // Carry out the pc_choose_normal or pc_choose_lose
-    if (choice >= 0 && choice <= 5)
+    if (choice < PCT_RAND_EASY)
     {
         return pc_choose_normal();
     }
@@ -425,7 +426,7 @@ char pc_choose_easy(void)
     return pc_choose_lose();
 }
 
-// Helper function to always pick the losing move according to the general pattern
+// Helper function to always pick the losing move assuming player follows the win-keep lose-shift strategy
 char pc_choose_lose(void)
 {
     // General behavior of a person: win or tie ---> keep move, 
