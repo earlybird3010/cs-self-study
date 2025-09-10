@@ -26,6 +26,10 @@
 #define P_PREV_CHOICES 7
 #define DECAY_FREQUENCY 10
 
+
+// Debug
+void print_frequency_matrix(int [3][3]);
+
 // Player
 int p_score = 0;
 bool is_p_win = false;
@@ -418,6 +422,9 @@ void start_game(int number_of_rounds)
 {
     for (int i = 0; i < number_of_rounds; i++)
     {
+        // Debug: print frequency_matrix
+        print_frequency_matrix(frequency_matrix);
+
         // At this time, pc_choice, p_choice, is_p_win, is_pc_win describe prev round
         // Computer chooses based on mode except for first round
         if (i == 0 || mode == NORMAL)
@@ -692,54 +699,54 @@ char pc_choose_win_markov(char last_p_choice, int num_round)
     {
         // Search for the latest 2 consecutive moves of type last_p_move P or last_p_move R
         char next_moves[] = {ROCK, PAPER};
-        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
 
-        if (possible_next_move == '\0')
+        if (p_possible_next_choice == '\0')
         {
             // break tie
             return get_winning_choice(break_tie(num_round, ROCK, PAPER));
         }
-        return possible_next_move;
+        return get_winning_choice(p_possible_next_choice);
     }
     else if (p_then_rock == p_then_scissors && p_then_rock > p_then_scissors)
     {
         // Search for the latest 2 consecutive moves of type last_p_move R or last_p_move S
         char next_moves[] = {ROCK, SCISSORS};
-        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
 
-        if (possible_next_move == '\0')
+        if (p_possible_next_choice == '\0')
         {
             // break tie
             return get_winning_choice(break_tie(num_round, ROCK, PAPER));
         }
-        return possible_next_move;
+        return get_winning_choice(p_possible_next_choice);
     }
     else if (p_then_paper == p_then_scissors && p_then_paper > p_then_rock)
     {
         // Search for the latest 2 consecutive moves of type last_p_move P or last_p_move S
         char next_moves[] = {PAPER, SCISSORS};
-        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
 
-        if (possible_next_move == '\0')
+        if (p_possible_next_choice == '\0')
         {
             // break tie
             return get_winning_choice(break_tie(num_round, PAPER, SCISSORS));
         }
-        return possible_next_move;
+        return get_winning_choice(p_possible_next_choice);
     }
     else
     {
         // p_then_rock == p_then_paper == p_then_scissors
         // Search for the latest 2 consecutive moves of type last_p_move *
         char next_moves[] = {ROCK, PAPER, SCISSORS};
-        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
 
-        if (possible_next_move == '\0')
+        if (p_possible_next_choice == '\0')
         {
             // break tie
             return get_winning_choice(break_tie(num_round, break_tie(num_round, PAPER, SCISSORS), ROCK));
         }
-        return possible_next_move;
+        return get_winning_choice(p_possible_next_choice);
     }
 }
 
@@ -836,3 +843,19 @@ char get_winning_choice(char choice)
             return ROCK;
     }
 }
+
+void print_frequency_matrix(int frequency_matrix[3][3])
+{
+    int row_num = 3, column_num = 3;
+
+    for (int i = 0; i < row_num; i++)
+    {
+        for (int j = 0; j < row_num; j++)
+        {
+            printf("%i ", frequency_matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+
