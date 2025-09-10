@@ -52,7 +52,7 @@ Game logic (phase 1)
 Phase 2 (4 levels of difficulty)
 Player
 
-- State: prev_choices
+- State: p_prev_choices
 
 Computer
 
@@ -64,13 +64,11 @@ Computer
 - Hard strategy: 15% random, 85% counter the most frequent player's choice in 
 recent history. If tie, choose the most recent choice.
 
-- Expert strategy: uses Markov-1 predictor
+- Expert strategy: 10% random, 90% counter the most probable next move of the player 
 
 Game
 
-State:
-
-- mode = option for level of difficulty
+- State: frequency_matrix, mode
 
 - Prompts the player for a choice; computer picks based on strategy chosen.
 

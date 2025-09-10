@@ -19,16 +19,18 @@
 #define EASY 'e'
 #define PCT_RAND_EASY 60
 #define PCT_RAND_HARD 15
+#define PCT_RAND_EXPERT 0
 #define NORMAL 'n'
 #define HARD 'h'
 #define EXPERT 'x'
 #define P_PREV_CHOICES 7
+#define DECAY_FREQUENCY 10
 
 // Player
 int p_score = 0;
 bool is_p_win = false;
 char p_choice;
-char prev_choices[P_PREV_CHOICES];
+char p_prev_choices[P_PREV_CHOICES];
 
 // Computer
 int pc_score = 0;
@@ -40,8 +42,14 @@ char pc_choose_lose_CR(void);
 char pc_choose_hard(char [], int);
 char pc_choose_win_frequency(char [], int);
 char most_frequent_recent_choice(char, char, char, int, int, int, char []);
+char pc_choose_expert(char, int);
+char pc_choose_win_markov(char, int);
+char get_earliest_match(char [], int, char);
+char break_tie(int, char, char);
+char get_winning_choice(char);
 
 // Game
+int frequency_matrix[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 char mode;
 void print_mode(char);
 
@@ -77,11 +85,12 @@ int get_rounds_num(void);
 void start_game(int);
 bool is_input_match(string, string);
 void set_mode(void);
-void set_prev_choices(int);
+void set_p_prev_choices(int);
 char get_player_choice(void);
 int get_choice_value(char);
+void update_matrix(char p_choice, char last_p_choice, int);
 void update_prev_choices(char [], int, char);
-void update_game(char, char);
+void update_game(char, char, int);
 void display_computer_choice(void);
 void print_rules(char choice);
 void display_result(void);
@@ -96,7 +105,7 @@ int main(void)
     set_mode();
     printf("Okay, we're going to play %i rounds ", number_of_rounds);
     print_mode(mode);
-    set_prev_choices(P_PREV_CHOICES);
+    set_p_prev_choices(P_PREV_CHOICES);
     
     // Seed the random generator for different sequences of random output every time we run the program
     srand((unsigned) time(NULL));
@@ -146,6 +155,7 @@ bool is_input_match(string input_string, string match_string)
     // Check if input_string is an empty line
     return length_input_string > 0;
 }
+
 
 void print_mode(char mode)
 {
@@ -202,12 +212,12 @@ void set_mode(void)
     } while (mode != 'e' && mode != 'n' && mode != 'h' && mode != 'x');
 }
 
-// Set the initial state for the player's last CHOICES_LENGTH choices
-void set_prev_choices(int choices_length)
+// Init p_prev_choices
+void set_p_prev_choices(int choices_length)
 {
     for (int i = 0; i < choices_length; i++)
     {
-        prev_choices[i] = EMPTY;   
+        p_prev_choices[i] = EMPTY;   
     }
 }
 
@@ -235,19 +245,21 @@ char get_player_choice(void)
                 clearerr(stdin); 
                 continue; 
             }
-
         }
         
         if (is_input_match(input_string, "rock"))
         {
             p_choice = ROCK;
-        } else if (is_input_match(input_string, "paper"))
+        } 
+        else if (is_input_match(input_string, "paper"))
         {
             p_choice = PAPER;
-        } else if (is_input_match(input_string, "scissors"))
+        } 
+        else if (is_input_match(input_string, "scissors"))
         {
             p_choice = SCISSORS;
-        } else
+        } 
+        else
         {
             printf("Please enter r/p/s or any similar word to rock or paper or scissors.\n");
         }
@@ -305,8 +317,42 @@ int get_choice_value(char choice)
     }
 }
 
+// Increment frequency_matrix[last_p_choice][p_choice] by 1 and decay its value to half after a
+// fix number of rounds to diminish the far history effect
+void update_matrix(char p_choice, char last_p_choice, int num_round)
+{
+    int p_choice_value = get_choice_value(p_choice);
+
+    if (num_round >= 1)
+    {
+        int last_p_choice_value = get_choice_value(last_p_choice);
+        frequency_matrix[last_p_choice_value][p_choice_value]++;
+    }
+
+    if (num_round % DECAY_FREQUENCY == 0)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                frequency_matrix[i][j] /= 2;
+            }
+        }
+    }
+}
+
+// Push P_CHOICE, the most current choice to the front of P_PREV_CHOICES 
+void update_prev_choices(char prev_choices[], int prev_choices_length, char p_choice)
+{
+    for (int i = prev_choices_length - 1; i >= 1; i--)
+    {
+        prev_choices[i] = prev_choices[i - 1];
+    }
+    prev_choices[0] = p_choice;
+}
+
 // Update state of game when get results from 1 round of rock, paper, scissors
-void update_game(char p_choice, char pc_choice)
+void update_game(char p_choice, char pc_choice, int num_round)
 {
     int p_choice_value = get_choice_value(p_choice), pc_choice_value = get_choice_value(pc_choice);
 
@@ -316,7 +362,8 @@ void update_game(char p_choice, char pc_choice)
     p_score += (int) is_p_win;
     pc_score += (int) is_pc_win;
 
-    update_prev_choices(prev_choices, P_PREV_CHOICES, p_choice);
+    update_matrix(p_choice, p_prev_choices[0], num_round);
+    update_prev_choices(p_prev_choices, P_PREV_CHOICES, p_choice);
 }
 
 void display_computer_choice(void)
@@ -383,17 +430,17 @@ void start_game(int number_of_rounds)
         }
         else if (mode == HARD)
         {
-            pc_choice = pc_choose_hard(prev_choices, P_PREV_CHOICES);
+            pc_choice = pc_choose_hard(p_prev_choices, P_PREV_CHOICES);
         }
         else
         {
-            pc_choice = pc_choose_normal();
+            pc_choice = pc_choose_expert(p_prev_choices[0], i);
         }
 
         p_choice = get_player_choice();
 
         display_computer_choice();
-        update_game(p_choice, pc_choice);
+        update_game(p_choice, pc_choice, i);
         display_result();
 
         //Display points
@@ -479,7 +526,7 @@ char pc_choose_lose_CR(void)
 
 // Choose rock, paper, scissors randomly for 15% of the time, while choose the winning choice based on frequency
 // for the rest of it 
-char pc_choose_hard(char prev_choices[], int prev_choices_length)
+char pc_choose_hard(char p_prev_choices[], int prev_choices_length)
 {
     // Use probability to pick random or win based on frequency
     int roll = rand() % 100;
@@ -489,11 +536,11 @@ char pc_choose_hard(char prev_choices[], int prev_choices_length)
         return pc_choose_normal();
     }
     
-    return pc_choose_win_frequency(prev_choices, prev_choices_length);
+    return pc_choose_win_frequency(p_prev_choices, prev_choices_length);
 }
 
 // Choose the winning choice based on frequency
-char pc_choose_win_frequency(char prev_choices[], int prev_choices_length)
+char pc_choose_win_frequency(char p_prev_choices[], int prev_choices_length)
 {
     // Iterate through the array to keep track of the number of rock, paper, scissors choice made, as well as
     // their order in terms of recency
@@ -502,7 +549,7 @@ char pc_choose_win_frequency(char prev_choices[], int prev_choices_length)
 
     for (int i = prev_choices_length - 1; i >= 0; i--)
     {
-        char choice = prev_choices[i];
+        char choice = p_prev_choices[i];
 
         if (choice == EMPTY)
         {
@@ -604,12 +651,188 @@ char most_frequent_recent_choice(char choice1, char choice2, char choice3, int c
     }
 }
 
-// Push P_CHOICE, the most current choice to the front of PREV_CHOICES 
-void update_prev_choices(char prev_choices[], int prev_choices_length, char p_choice)
+// Choose randomly for PCT_RAND_EXPERT% of the time, while choose the most likely to win choice using the Markov
+// transition table for the rest of it
+char pc_choose_expert(char last_p_choice, int num_round)
 {
-    for (int i = prev_choices_length - 1; i >= 1; i--)
+    // Use probability to pick Markov-based choice or randomly
+    int roll = rand() % 100;
+    
+    // Carry out the pc_choose_normal
+    if (roll < PCT_RAND_EXPERT)
     {
-        prev_choices[i] = prev_choices[i - 1];
+        return pc_choose_normal();
     }
-    prev_choices[0] = p_choice;
+        
+    return pc_choose_win_markov(last_p_choice, num_round);
+}
+
+// Choose the most likely to win move based on the Markov transition matrix
+char pc_choose_win_markov(char last_p_choice, int num_round)
+{
+    int last_p_value = get_choice_value(last_p_choice);
+
+    int p_then_rock = frequency_matrix[last_p_value][ROCK_VALUE];
+    int p_then_paper = frequency_matrix[last_p_value][PAPER_VALUE];
+    int p_then_scissors = frequency_matrix[last_p_value][SCISSORS_VALUE];
+
+    if (p_then_rock > p_then_paper && p_then_rock > p_then_scissors)
+    {
+        return get_winning_choice(ROCK);
+    }
+    else if (p_then_paper > p_then_rock && p_then_paper > p_then_scissors)
+    {
+        return get_winning_choice(PAPER);
+    }
+    else if (p_then_scissors > p_then_rock && p_then_scissors > p_then_paper)
+    {
+        return get_winning_choice(SCISSORS);
+    }
+    else if (p_then_rock == p_then_paper && p_then_rock > p_then_scissors)
+    {
+        // Search for the latest 2 consecutive moves of type last_p_move P or last_p_move R
+        char next_moves[] = {ROCK, PAPER};
+        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+
+        if (possible_next_move == '\0')
+        {
+            // break tie
+            return get_winning_choice(break_tie(num_round, ROCK, PAPER));
+        }
+        return possible_next_move;
+    }
+    else if (p_then_rock == p_then_scissors && p_then_rock > p_then_scissors)
+    {
+        // Search for the latest 2 consecutive moves of type last_p_move R or last_p_move S
+        char next_moves[] = {ROCK, SCISSORS};
+        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+
+        if (possible_next_move == '\0')
+        {
+            // break tie
+            return get_winning_choice(break_tie(num_round, ROCK, PAPER));
+        }
+        return possible_next_move;
+    }
+    else if (p_then_paper == p_then_scissors && p_then_paper > p_then_rock)
+    {
+        // Search for the latest 2 consecutive moves of type last_p_move P or last_p_move S
+        char next_moves[] = {PAPER, SCISSORS};
+        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+
+        if (possible_next_move == '\0')
+        {
+            // break tie
+            return get_winning_choice(break_tie(num_round, PAPER, SCISSORS));
+        }
+        return possible_next_move;
+    }
+    else
+    {
+        // p_then_rock == p_then_paper == p_then_scissors
+        // Search for the latest 2 consecutive moves of type last_p_move *
+        char next_moves[] = {ROCK, PAPER, SCISSORS};
+        char possible_next_move = get_earliest_match(next_moves, 2, last_p_choice);
+
+        if (possible_next_move == '\0')
+        {
+            // break tie
+            return get_winning_choice(break_tie(num_round, break_tie(num_round, PAPER, SCISSORS), ROCK));
+        }
+        return possible_next_move;
+    }
+}
+
+// Return the next choice in NEXT_CHOICES that appears earliest in p_prev_moves right before PREV_MOVE, 
+// or '\0' if can't find the pattern
+char get_earliest_match(char next_choices[], int next_choices_length, char prev_choice)
+{
+    for (int i = 0; i < P_PREV_CHOICES - 2; i++)
+    {
+        bool current_in_next_choices = false;
+        char current = p_prev_choices[i];
+
+        for (int j = 0; j < next_choices_length; j++)
+        {
+            if (current == next_choices[j])
+            {
+                current_in_next_choices = true;
+            }
+        }
+        
+        if (current_in_next_choices && p_prev_choices[i + 1] == prev_choice)
+        {
+            return p_prev_choices[i];
+        }
+    }
+
+    return '\0';
+}
+
+// Return the prioritized next move of the player between CHOICE1 and CHOICE2 if computer cannot 
+// solve by recency
+char break_tie(int num_round, char choice1, char choice2)
+{
+    if (num_round % 3 == 0)
+    {
+        // R > P > S
+        if (choice1 == ROCK || choice2 == ROCK)
+        {
+            return ROCK;
+        }
+        else if (choice1 == PAPER)
+        {
+            return choice1;
+        }
+        else
+        {
+            return choice2;
+        }
+    }
+    else if (num_round % 3 == 1)
+    {
+        // P > S > R
+        if (choice1 == PAPER || choice2 == PAPER)
+        {
+            return PAPER;
+        }
+        else if (choice1 == SCISSORS)
+        {
+            return choice1;
+        }
+        else
+        {
+            return choice2;
+        }
+    }
+    else
+    {
+        // S > R > P
+        if (choice1 == SCISSORS || choice2 == SCISSORS)
+        {
+            return SCISSORS;
+        }
+        else if (choice1 == ROCK)
+        {
+            return choice1;
+        }
+        else
+        {
+            return choice2;
+        }
+    }
+}
+
+// Return the choice that beats CHOICE
+char get_winning_choice(char choice)
+{
+    switch(choice)
+    {
+        case ROCK:
+            return PAPER;
+        case PAPER:
+            return SCISSORS;
+        case SCISSORS:
+            return ROCK;
+    }
 }
