@@ -19,16 +19,12 @@
 #define EASY 'e'
 #define PCT_RAND_EASY 60
 #define PCT_RAND_HARD 15
-#define PCT_RAND_EXPERT 0
+#define PCT_RAND_EXPERT 10
 #define NORMAL 'n'
 #define HARD 'h'
 #define EXPERT 'x'
 #define P_PREV_CHOICES 7
 #define DECAY_FREQUENCY 10
-
-
-// Debug
-void print_frequency_matrix(int [3][3]);
 
 // Player
 int p_score = 0;
@@ -53,7 +49,7 @@ char break_tie(int, char, char);
 char get_winning_choice(char);
 
 // Game
-int frequency_matrix[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+int frequency_matrix[3][3] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 char mode;
 void print_mode(char);
 
@@ -333,14 +329,14 @@ void update_matrix(char p_choice, char last_p_choice, int num_round)
         frequency_matrix[last_p_choice_value][p_choice_value]++;
     }
 
-    if (num_round % DECAY_FREQUENCY == 0)
+    // Decay evidence evey DECAY_FREQUENCY rounds
+    if ((num_round + 1) % DECAY_FREQUENCY == 0)
     {
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
             {
-                frequency_matrix[i][j] /= 2;
-            }
+                frequency_matrix[i][j] = 1 + (frequency_matrix[i][j] - 1) / 2;         }
         }
     }
 }
@@ -422,9 +418,6 @@ void start_game(int number_of_rounds)
 {
     for (int i = 0; i < number_of_rounds; i++)
     {
-        // Debug: print frequency_matrix
-        print_frequency_matrix(frequency_matrix);
-
         // At this time, pc_choice, p_choice, is_p_win, is_pc_win describe prev round
         // Computer chooses based on mode except for first round
         if (i == 0 || mode == NORMAL)
@@ -445,7 +438,6 @@ void start_game(int number_of_rounds)
         }
 
         p_choice = get_player_choice();
-
         display_computer_choice();
         update_game(p_choice, pc_choice, i);
         display_result();
@@ -679,75 +671,79 @@ char pc_choose_win_markov(char last_p_choice, int num_round)
 {
     int last_p_value = get_choice_value(last_p_choice);
 
-    int p_then_rock = frequency_matrix[last_p_value][ROCK_VALUE];
-    int p_then_paper = frequency_matrix[last_p_value][PAPER_VALUE];
-    int p_then_scissors = frequency_matrix[last_p_value][SCISSORS_VALUE];
+    int pr = frequency_matrix[last_p_value][ROCK_VALUE];
+    int pp = frequency_matrix[last_p_value][PAPER_VALUE];
+    int ps = frequency_matrix[last_p_value][SCISSORS_VALUE];
 
-    if (p_then_rock > p_then_paper && p_then_rock > p_then_scissors)
+    if (pr > pp && pr > ps)
     {
         return get_winning_choice(ROCK);
     }
-    else if (p_then_paper > p_then_rock && p_then_paper > p_then_scissors)
+
+    if (pp > pr && pp > ps)
     {
         return get_winning_choice(PAPER);
     }
-    else if (p_then_scissors > p_then_rock && p_then_scissors > p_then_paper)
+
+    if (ps > pr && ps > pp)
     {
         return get_winning_choice(SCISSORS);
     }
-    else if (p_then_rock == p_then_paper && p_then_rock > p_then_scissors)
+
+    if (pr == pp && pr > ps)
     {
         // Search for the latest 2 consecutive moves of type last_p_move P or last_p_move R
-        char next_moves[] = {ROCK, PAPER};
-        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
+        char cand[] = {ROCK, PAPER};
+        char next_choice = get_earliest_match(cand, 2, last_p_choice);
 
-        if (p_possible_next_choice == '\0')
+        if (next_choice == '\0')
         {
             // break tie
             return get_winning_choice(break_tie(num_round, ROCK, PAPER));
         }
-        return get_winning_choice(p_possible_next_choice);
+        return get_winning_choice(next_choice);
     }
-    else if (p_then_rock == p_then_scissors && p_then_rock > p_then_scissors)
+
+    if (pr == ps && pr > pp)
     {
         // Search for the latest 2 consecutive moves of type last_p_move R or last_p_move S
-        char next_moves[] = {ROCK, SCISSORS};
-        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
+        char cand[] = {ROCK, SCISSORS};
+        char next_choice = get_earliest_match(cand, 2, last_p_choice);
 
-        if (p_possible_next_choice == '\0')
+        if (next_choice == '\0')
         {
             // break tie
-            return get_winning_choice(break_tie(num_round, ROCK, PAPER));
+            return get_winning_choice(break_tie(num_round, ROCK, SCISSORS));
         }
-        return get_winning_choice(p_possible_next_choice);
+        return get_winning_choice(next_choice);
     }
-    else if (p_then_paper == p_then_scissors && p_then_paper > p_then_rock)
+
+    if (pp == ps && pp > pr)
     {
         // Search for the latest 2 consecutive moves of type last_p_move P or last_p_move S
-        char next_moves[] = {PAPER, SCISSORS};
-        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
+        char cand[] = {PAPER, SCISSORS};
+        char next_choice = get_earliest_match(cand, 2, last_p_choice);
 
-        if (p_possible_next_choice == '\0')
+        if (next_choice == '\0')
         {
             // break tie
             return get_winning_choice(break_tie(num_round, PAPER, SCISSORS));
         }
-        return get_winning_choice(p_possible_next_choice);
+        return get_winning_choice(next_choice);
     }
-    else
-    {
-        // p_then_rock == p_then_paper == p_then_scissors
-        // Search for the latest 2 consecutive moves of type last_p_move *
-        char next_moves[] = {ROCK, PAPER, SCISSORS};
-        char p_possible_next_choice = get_earliest_match(next_moves, 2, last_p_choice);
 
-        if (p_possible_next_choice == '\0')
-        {
-            // break tie
-            return get_winning_choice(break_tie(num_round, break_tie(num_round, PAPER, SCISSORS), ROCK));
-        }
-        return get_winning_choice(p_possible_next_choice);
+    // pr == pp == ps
+    // Search for the latest 2 consecutive moves of type last_p_move *
+    char cand[] = {ROCK, PAPER, SCISSORS};
+    char next_choice = get_earliest_match(cand, 2, last_p_choice);
+
+    if (next_choice == '\0')
+    {
+        // break tie
+        return get_winning_choice(break_tie(num_round, break_tie(num_round, PAPER, SCISSORS), ROCK));
     }
+    
+    return get_winning_choice(next_choice);
 }
 
 // Return the next choice in NEXT_CHOICES that appears earliest in p_prev_moves right before PREV_MOVE, 
@@ -844,18 +840,18 @@ char get_winning_choice(char choice)
     }
 }
 
-void print_frequency_matrix(int frequency_matrix[3][3])
-{
-    int row_num = 3, column_num = 3;
+// void print_frequency_matrix(int frequency_matrix[3][3])
+// {
+//     int row_num = 3, column_num = 3;
 
-    for (int i = 0; i < row_num; i++)
-    {
-        for (int j = 0; j < row_num; j++)
-        {
-            printf("%i ", frequency_matrix[i][j]);
-        }
-        printf("\n");
-    }
-}
+//     for (int i = 0; i < row_num; i++)
+//     {
+//         for (int j = 0; j < row_num; j++)
+//         {
+//             printf("%i ", frequency_matrix[i][j]);
+//         }
+//         printf("\n");
+//     }
+// }
 
 
