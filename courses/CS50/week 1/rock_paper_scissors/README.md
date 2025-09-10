@@ -72,7 +72,7 @@ gcc -std=c11 -Wall -Wextra -Werror main.c -o main -lcs50
 
 ```markdown
 rock_paper_scissors/
-├── cs50.c        # vendored CS50 library source
+├──.vscode/       # files for build & debug
 ├── cs50.h        # vendored CS50 header
 ├── main.c        # program source
 ├── README.md
