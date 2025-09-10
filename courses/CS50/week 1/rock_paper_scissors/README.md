@@ -25,7 +25,7 @@ This project simulates two players playing rock, paper, scissors. It’s a found
 
 ### Core Logic
 - [x] Single play against computer with chosen number of rounds
-- [ ] Multiple levels of difficulty vs. computer
+- [x] Multiple levels of difficulty vs. computer
 - [ ] Results history
 - [ ] Customizable player name for record keeping
 

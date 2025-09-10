@@ -56,7 +56,7 @@ Player
 
 Computer
 
-- Easy strategy: 60% random, 40% intentionally loses based on last round's outcome
+- Easy strategy: 60% random, 40% intentionally lose based on last round's outcome
 (win/lose -> repeat last choice, tie -> pick the choice that loses to last choice)
 
 - Normal strategy: on each round, choose uniformly at random from rock/paper/scissors.   
@@ -126,17 +126,30 @@ Main sources: https://arxiv.org/pdf/1404.5199 (read the abstract and the empiric
 - At each round the computer commits before the player inputs; i.e, computer's strategy uses only previous round data
 ---> avoid using an additional variable for a player's previous input.
 
+- The computer's strategy in the expert phase borrows the idea from Markov model, i.e, we assume the probability of a player
+moving from 1 choice to another eventually converges to a fixed value. However, this only applies for a game with 
+many rounds. Because of both the assumption and the limited number of rounds, this expert mode needs to be
+considered.
+
 Resume bullets:
 
 Phase 1:
 
-- Implement a console Rock–Paper–Scissors in C with robust input handling (case-insensitive, prefix matching, EOF/I/O error handling).
+- Build a console Rock–Paper–Scissors in C with robust input handling (case-insensitive, prefix matching, EOF/I/O safety) and early-stop scoring.
 
 - Modularize code into functions (input parsing, decision logic) for readability and reliability.
 
 Phase 2:
 
-- Implement an easy level of difficulty which sometimes loses to players who use the win-keep lose-shift pattern
+Implement multi-difficulty AI:
 
-- Implement a hard level of difficulty which punishes a player's overused move
+- Easy : intentionlly lose based on conditional response
+
+- Hard: frequency + recency on 7-move window
+
+- Expert: Markov-1 with Laplace smoothing, ε-greedy, recency tie-break, and 
+periodic decay.
+
+- Added a lean black-box test plan to validate behavior
+
 
