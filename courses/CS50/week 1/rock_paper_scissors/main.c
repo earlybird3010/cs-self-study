@@ -2,11 +2,11 @@
 
 #include <cs50.h>
 #include <ctype.h>
-#include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
-#include <time.h>
+#include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #define EMPTY '\0'
 #define ROCK 'r'
@@ -58,6 +58,7 @@ char mode;
 void print_mode(char);
 void load_stats_data(string, long []);
 int update_stats_data(string, int, int);
+int update_history(string, char, int, int, int);
 
 // Welcome screen
 const char *rock_art =
@@ -458,6 +459,7 @@ void start_game(int number_of_rounds)
         {
             printf(p_score > pc_score ? "You have won this game!\n" : "The computer has won this game!\n");
             update_stats_data(STATS_FILE, p_score, pc_score);
+            update_history(HISTORY_FILE, mode, number_of_rounds, p_score, pc_score);
             break;
         }
 
@@ -465,18 +467,21 @@ void start_game(int number_of_rounds)
         {
             printf("We have a draw!\n");
             update_stats_data(STATS_FILE, p_score, pc_score);
+            update_history(HISTORY_FILE, mode, number_of_rounds, p_score, pc_score);
             break;
         } 
         else if (p_score > pc_score && i == number_of_rounds - 1)
         {
             printf("You have won this game!\n");
             update_stats_data(STATS_FILE, p_score, pc_score);
+            update_history(HISTORY_FILE, mode, number_of_rounds, p_score, pc_score);
             break;
         } 
         else if (i ==  number_of_rounds - 1)
         {
             printf("The computer has won this game!\n");
             update_stats_data(STATS_FILE, p_score, pc_score);
+            update_history(HISTORY_FILE, mode, number_of_rounds, p_score, pc_score);
             break;
         }
     }
@@ -942,6 +947,46 @@ int update_stats_data(string filename, int p_score, int pc_score)
 
     return 0;
 }
+
+int update_history(string filename, char mode, int rounds, int p_score, int pc_score)
+{
+    // Get the current time
+    time_t curr_time = time(NULL);
+    struct tm *t = localtime(&curr_time);
+    char ts[20];
+
+    if (!t || !strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", t) > 0)
+    {
+        strcpy(ts, "unknown");
+    }
+
+    string result;
+
+    if (p_score > pc_score)
+    {
+        result = "P_WIN";
+    }
+    else if (p_score == pc_score)
+    {
+        result = "DRAW";
+    }
+    else
+    {
+        result = "PC_WIN";
+    }
+
+    FILE *history_file = fopen(HISTORY_FILE, "a");
+    if (!history_file)
+    {
+        perror("open history log");
+        return 1;
+    }
+
+    fprintf(history_file, "%s,%c,%d,%d,%d,%s", ts, mode, rounds, p_score, pc_score, result);
+    fclose(history_file);
+    return 0;
+}
+
 
 // void print_frequency_matrix(int frequency_matrix[3][3])
 // {

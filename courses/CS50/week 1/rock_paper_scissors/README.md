@@ -26,7 +26,7 @@ This project simulates two players playing rock, paper, scissors. It’s a found
 ### Core Logic
 - [x] Single play against computer with chosen number of rounds
 - [x] Multiple levels of difficulty vs. computer
-- [ ] Results history
+- [x] Results history
 - [ ] Customizable player name for record keeping
 
 ### Core “GUI”
@@ -73,7 +73,6 @@ gcc -std=c11 -Wall -Wextra -Werror main.c -o main -lcs50
 ```markdown
 rock_paper_scissors/
 ├──.vscode/       # files for build & debug
-├── cs50.h        # vendored CS50 header
 ├── main.c        # program source
 ├── README.md
 └── doc.txt       # notes tracker
