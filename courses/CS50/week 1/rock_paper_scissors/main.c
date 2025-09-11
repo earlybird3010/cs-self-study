@@ -25,6 +25,9 @@
 #define EXPERT 'x'
 #define P_PREV_CHOICES 7
 #define DECAY_FREQUENCY 10
+#define STATS_FILE "rps_stats.csv"
+#define HISTORY_FILE "rps_history.csv"
+#define HEADER_SIZE 1024
 
 // Player
 int p_score = 0;
@@ -48,10 +51,13 @@ char get_earliest_match(char [], int, char);
 char break_tie(int, char, char);
 char get_winning_choice(char);
 
+
 // Game
 int frequency_matrix[3][3] = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 char mode;
 void print_mode(char);
+void load_stats_data(string, long []);
+int update_stats_data(string, int, int);
 
 // Welcome screen
 const char *rock_art =
@@ -451,22 +457,26 @@ void start_game(int number_of_rounds)
         if (abs(p_score - pc_score) > remaining_rounds)
         {
             printf(p_score > pc_score ? "You have won this game!\n" : "The computer has won this game!\n");
+            update_stats_data(STATS_FILE, p_score, pc_score);
             break;
         }
 
         if (p_score == pc_score && i == number_of_rounds - 1)
         {
             printf("We have a draw!\n");
+            update_stats_data(STATS_FILE, p_score, pc_score);
             break;
         } 
         else if (p_score > pc_score && i == number_of_rounds - 1)
         {
             printf("You have won this game!\n");
+            update_stats_data(STATS_FILE, p_score, pc_score);
             break;
         } 
         else if (i ==  number_of_rounds - 1)
         {
             printf("The computer has won this game!\n");
+            update_stats_data(STATS_FILE, p_score, pc_score);
             break;
         }
     }
@@ -840,6 +850,99 @@ char get_winning_choice(char choice)
     }
 }
 
+// Load data from statistics file and store them in STATS
+void load_stats_data(string filename, long stats[])
+{
+    stats[0] = stats[1] = stats[2] = stats[3] = 0;
+
+    FILE *file = fopen(filename, "r");
+    
+    if (!file)
+    {
+        return;
+    }
+
+    char header[HEADER_SIZE];
+    char line[1024];
+
+    if (!fgets(header, sizeof header, file))
+    {
+        fclose(file);
+        return;
+    }
+
+    if (!fgets(line, sizeof line, file))
+    {
+        fclose(file);
+        return;
+    }
+
+
+    long g = 0, pw = 0, pcw = 0, d = 0;
+    int n = sscanf(line, " %ld , %ld , %ld , %ld", &g, &pw, &pcw, &d);
+
+    if (n == 4)
+    {
+        stats[0] = g;
+        stats[1] = pw;
+        stats[2] = pcw;
+        stats[3] = d;
+    }
+
+    fclose(file);
+}
+
+// Update stats in filename based on p_score and pc_score
+int update_stats_data(string filename, int p_score, int pc_score)
+{
+    long stats[4];
+    load_stats_data(filename, stats);
+    long game = stats[0], p_wins = stats[1], pc_wins = stats[2], draw = stats[3];
+
+    game += 1;
+
+    if (p_score == pc_score)
+    {
+        draw += 1;
+    }
+    else if (p_score > pc_score)
+    {
+        p_wins += 1;
+    }
+    else
+    {
+        pc_wins += 1;
+    }
+
+    // Transfer information back to stats file
+    const char *tmp = "temp_file";
+
+    FILE *temp = fopen(tmp, "w");
+
+    if (!temp)
+    {
+        perror("open tmp");
+        return 1;
+    }
+
+    fprintf(temp, "games,p_wins,pc_wins,draws\n");
+    fprintf(temp, "%ld,%ld,%ld,%ld\n", game, p_wins, pc_wins, draw);
+
+    if (fclose(temp) != 0)
+    {
+        perror("close tmp");
+        return 1;
+    }
+
+    if (rename(tmp, filename) != 0)
+    {
+        perror("rename");
+        return 1;
+    }
+
+    return 0;
+}
+
 // void print_frequency_matrix(int frequency_matrix[3][3])
 // {
 //     int row_num = 3, column_num = 3;
@@ -853,5 +956,4 @@ char get_winning_choice(char choice)
 //         printf("\n");
 //     }
 // }
-
 

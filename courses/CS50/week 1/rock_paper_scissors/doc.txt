@@ -91,6 +91,29 @@ Game logic (phase 2)
     - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
     - Ties still consume a round.
 
+Phase 3 (save statistics and past results)
+
+Game logic (phase 3)
+
+1. Print welcome screen (ASCII art).
+
+2. Ask for number of rounds (positive integer).
+
+3. Ask for mode (e/n/h/x)
+
+4. For each round:
+    4.1) Computer chooses based on strategy picked.
+    4.2) Prompt player for choice (r/p/s; case-insensitive; accepts prefixes like “ro”, “rocky” by design).
+    4.3) Display the computer’s choice.
+    4.4) Display the round result with a rule line (e.g., “PAPER covers ROCK!”). (must update game here)
+    4.5) Display scores.
+    4.6) Early stop when winner is determined:
+    - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
+    - Ties still consume a round.
+    4.7) Update statistics in .csv file for stats
+    4.8) Append this round's result to .csv file for history
+
+
 Key decisions
 
 - Input matching: prefix OK (e.g., “scissor”, “rocky”), case-insensitive, leading spaces ignored.
@@ -152,8 +175,19 @@ periodic decay.
 
 - Added a lean black-box test plan to validate behavior
 
+Phase 3: Working with I/O to process data from files
 
+- A .csv file is a plain text file that stores tabular data like a spreadsheet or where each line
+represents a row . Its values on every row are separated by commas.
 
+- Some useful functions: 
++ FILE *fopen(char *filename, char *mode) opens filename file, associates it with a stream, and 
+returns a pointer to that stream. Only after opening a file can we process it. mode specifies the 
+actions that we can perform on the file.
++ char *fgets(char *str, int n, FILE *stream): read characters from stream 
+and store them as a string in str until n - 1 characters is read or a '\n' is encountered or EOF is reached.
++ size_t fwrite(void *ptr, size_t size, size_t nmemb, FILE *stream): writes NMEMB objects of size SIZE from
+PTR to STREAM. 
 
 
 
