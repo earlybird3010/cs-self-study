@@ -73,9 +73,12 @@ gcc -std=c11 -Wall -Wextra -Werror main.c -o main -lcs50
 ```markdown
 rock_paper_scissors/
 ├──.vscode/       # files for build & debug
+├── doc.txt       # note tracker
+├── main          # executable file
 ├── main.c        # program source
-├── README.md
-└── doc.txt       # notes tracker
+├── README.md     # details about this project
+└── rps_history.csv # collection of results of every match
+├── rps_stats.csv  # statistics of games played
 ```
 
 ---
