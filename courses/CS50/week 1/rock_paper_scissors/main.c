@@ -982,7 +982,7 @@ int update_history(string filename, char mode, int rounds, int p_score, int pc_s
         return 1;
     }
 
-    fprintf(history_file, "%s,%c,%d,%d,%d,%s", ts, mode, rounds, p_score, pc_score, result);
+    fprintf(history_file, "%s,%c,%d,%d,%d,%s\n", ts, mode, rounds, p_score, pc_score, result);
     fclose(history_file);
     return 0;
 }
@@ -1001,4 +1001,3 @@ int update_history(string filename, char mode, int rounds, int p_score, int pc_s
 //         printf("\n");
 //     }
 // }
-
