@@ -110,8 +110,10 @@ Game logic (phase 3)
     4.6) Early stop when winner is determined:
     - If abs(p_score - pc_score) > remaining_rounds, the leader is mathematically uncatchable → stop.
     - Ties still consume a round.
-    4.7) Update statistics in .csv file for stats
-    4.8) Append this round's result to .csv file for history
+
+5. Saving per match:
+- Update statistics in .csv file for stats
+- Append this round's result to .csv file for history
 
 
 Key decisions
@@ -143,37 +145,16 @@ to generate different sequences.
 
 Phase 2:
 
-- Humans rarely follow a mixed NE strategy when playing RPS. Instead, they follow a "win-stay,lose-shift" pattern.
+- Humans rarely follow a mixed NE strategy when playing RPS. Instead, they follow a "win-stay, lose-shift" pattern.
 Main sources: https://arxiv.org/pdf/1404.5199 (read the abstract and the empirical conditional response patterns) 
 
 - At each round the computer commits before the player inputs; i.e, computer's strategy uses only previous round data
 ---> avoid using an additional variable for a player's previous input.
 
-- The computer's strategy in the expert phase borrows the idea from Markov model, i.e, we assume the probability of a player
+- The computer's strategy in the expert phase borrows the idea from first-order Markov (Markov-1), i.e, we assume the probability of a player
 moving from 1 choice to another eventually converges to a fixed value. However, this only applies for a game with 
 many rounds. Because of both the assumption and the limited number of rounds, this expert mode needs to be
 considered.
-
-Resume bullets:
-
-Phase 1:
-
-- Build a console Rock–Paper–Scissors in C with robust input handling (case-insensitive, prefix matching, EOF/I/O safety) and early-stop scoring.
-
-- Modularize code into functions (input parsing, decision logic) for readability and reliability.
-
-Phase 2:
-
-Implement multi-difficulty AI:
-
-- Easy : intentionlly lose based on conditional response
-
-- Hard: frequency + recency on 7-move window
-
-- Expert: Markov-1 with Laplace smoothing, ε-greedy, recency tie-break, and 
-periodic decay.
-
-- Added a lean black-box test plan to validate behavior
 
 Phase 3: Working with I/O to process data from files
 
@@ -189,7 +170,29 @@ and store them as a string in str until n - 1 characters is read or a '\n' is en
 + size_t fwrite(void *ptr, size_t size, size_t nmemb, FILE *stream): writes NMEMB objects of size SIZE from
 PTR to STREAM. 
 
+Resume bullets:
 
+Phase 1:
+
+- Build a console Rock–Paper–Scissors in C with robust input handling (case-insensitive, prefix matching, EOF/I/O safety) and an early-stop win condition.
+
+- Modularize code into functions (input parsing, decision logic) for readability and reliability.
+
+Phase 2:
+
+Implement multi-difficulty AI:
+
+- Easy : intentionally lose based on conditional response
+
+- Hard: frequency + recency on 7-move window
+
+- Expert: Markov-1 with Laplace smoothing, ε-greedy, recency tie-break, and 
+periodic decay.
+
+Phase 3:
+
+- Added persistent storage: lifetime stats and match history in CSV with atomic writes;
+designed a lean black-blox text plan
 
 
 
